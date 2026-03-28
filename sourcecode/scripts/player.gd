@@ -8,6 +8,12 @@ var speed: float = Constants.PLAYER_SPEED
 # Inventar: Dict[ItemType, int]
 var inventory: Dictionary = {}
 
+# Health System
+var hp: int = Constants.PLAYER_HP
+var max_hp: int = Constants.PLAYER_MAX_HP
+var damage_cooldown: float = 0.0
+var is_alive: bool = true
+
 # References
 @onready var sprite = $AnimatedSprite2D
 @onready var detection_area = $DetectionArea
@@ -15,8 +21,13 @@ var inventory: Dictionary = {}
 
 # Signals
 signal item_collected(item_type: int, count: int)
+signal health_changed(hp: int, max_hp: int)
+signal player_died
 
 func _ready() -> void:
+	# Zur "player" Gruppe hinzufügen (für Detection durch Gegner)
+	add_to_group("player")
+	
 	# Initiales Inventar initialisieren
 	for item_type in Constants.ItemType.values():
 		inventory[item_type] = 0
@@ -34,6 +45,10 @@ func _ready() -> void:
 		detection_area.area_entered.connect(_on_item_entered)
 
 func _physics_process(delta: float) -> void:
+	# Update Cooldowns
+	if damage_cooldown > 0:
+		damage_cooldown -= delta
+	
 	# Input-Vektor sammeln (WASD + Pfeiltasten)
 	var input_vector = Vector2.ZERO
 	
@@ -82,6 +97,34 @@ func _on_item_entered(area: Area2D) -> void:
 		if Constants.DEBUG_MODE:
 			var display_name = Constants.ITEM_DATA[item_type]["display_name"]
 			print("✓ Item collected: %s (Total: %d)" % [display_name, inventory[item_type]])
+
+func take_damage(amount: int) -> void:
+	"""Player nimmt Schaden."""
+	if not is_alive or damage_cooldown > 0:
+		return
+	
+	hp -= amount
+	damage_cooldown = Constants.PLAYER_DAMAGE_COOLDOWN
+	emit_signal("health_changed", hp, max_hp)
+	
+	if Constants.DEBUG_MODE:
+		print("💥 Player takes %d damage! HP: %d/%d" % [amount, hp, max_hp])
+	
+	# Wenn HP <= 0, sterben
+	if hp <= 0:
+		_player_die()
+
+func _player_die() -> void:
+	"""Player stirbt."""
+	is_alive = false
+	emit_signal("player_died")
+	
+	if Constants.DEBUG_MODE:
+		print("💀 Player died! Game Over")
+	
+	# Optional: Später GameOver-Szene oder Respawn
+	# Für jetzt: einfach erstarren
+	velocity = Vector2.ZERO
 
 func _collect_nearby_items() -> void:
 	"""Deprecated - Items sammeln automatisch per Berührung."""

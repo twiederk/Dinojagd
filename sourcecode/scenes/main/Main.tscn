@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bxoyy8xxw61fo" path="res://scripts/item_spawner.gd" id="ItemSpawnerScript"]
 [ext_resource type="Script" uid="uid://c6bds5wqv3y6h" path="res://scripts/main.gd" id="MainScript"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/player/Player.tscn" id="PlayerScene"]
+[ext_resource type="PackedScene" uid="uid://trex" path="res://scenes/enemies/TRex.tscn" id="TRexScene"]
 
 [node name="Main" type="Node2D" unique_id=100323129]
 script = ExtResource("MainScript")
@@ -18,5 +19,8 @@ color = Color(0.2, 0.7, 0.2, 1)
 
 [node name="ItemSpawner" type="Node2D" parent="." unique_id=157976235]
 script = ExtResource("ItemSpawnerScript")
+
+[node name="TRex" parent="." unique_id=1511423132 instance=ExtResource("TRexScene")]
+position = Vector2(1026, 561)
 
 [node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]

@@ -48,6 +48,32 @@ const MAX_DISTANCE_FROM_PLAYER = 1000.0  # Items werden entfernt wenn zu weit we
 const SCREEN_WIDTH = 1280
 const SCREEN_HEIGHT = 720
 
+# Enemy Enum & Stats
+enum EnemyType {
+	T_REX
+}
+
+# T-Rex Konstanten
+const T_REX_SPRITE_PATH = "res://assets/T-Rex.png"
+const T_REX_HP = 100
+const T_REX_MAX_HP = 100
+const T_REX_DAMAGE = 15
+const T_REX_SPEED = 150.0
+const T_REX_CHASE_SPEED = 180.0
+const T_REX_DETECTION_RADIUS = 300.0
+const T_REX_DAMAGE_RADIUS = 30.0
+const T_REX_DAMAGE_COOLDOWN = 1.0  # Sekunden zwischen Damage Hits
+
+# Player Health
+const PLAYER_HP = 100
+const PLAYER_MAX_HP = 100
+const PLAYER_DAMAGE_COOLDOWN = 1.0
+
+# HealthBar UI
+const HEALTHBAR_WIDTH = 60
+const HEALTHBAR_HEIGHT = 8
+const HEALTHBAR_OFFSET_Y = -40  # Über dem Character
+
 # Debug Flags
 const DEBUG_MODE = true
 const DRAW_COLLECTION_RADIUS = true
