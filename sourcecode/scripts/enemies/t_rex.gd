@@ -18,7 +18,6 @@ var chase_speed: float = Constants.T_REX_CHASE_SPEED
 # AI State
 var target_player: CharacterBody2D = null
 var ai_mode: String = "PATROL"  # PATROL, CHASE, IDLE
-var current_velocity: Vector2 = Vector2.ZERO
 
 # Cooldowns
 var damage_cooldown: float = 0.0
@@ -68,10 +67,9 @@ func _update_ai_movement() -> void:
 		var direction = (target_player.global_position - global_position).normalized()
 		velocity = direction * chase_speed
 	elif ai_mode == "PATROL":
-		# Zufällige Patrol-Bewegung (später implementiert)
-		current_velocity = Vector2.ZERO
+		velocity = Vector2.ZERO
 	else:
-		current_velocity = Vector2.ZERO
+		velocity = Vector2.ZERO
 
 func _on_detection_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn det Player endet die DetectionArea betritt."""
@@ -84,7 +82,8 @@ func _on_detection_entered(area: Area2D) -> void:
 
 func _on_detection_exited(area: Area2D) -> void:
 	"""Wird aufgerufen wenn der Player die DetectionArea verlässt."""
-	if area.is_in_group("player"):
+	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
+	if is_player:
 		ai_mode = "PATROL"
 		if Constants.DEBUG_MODE:
 			print("  → Player lost! Back to patrol")
