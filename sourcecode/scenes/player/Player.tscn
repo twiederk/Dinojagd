@@ -7,8 +7,9 @@
 radius = 12.0
 height = 32.0
 
-[sub_resource type="CircleShape2D" id="DetectionShape"]
-radius = 80.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gfjak"]
+radius = 51.0
+height = 172.0
 
 [node name="Player" type="CharacterBody2D" unique_id=212906186]
 position = Vector2(640, 360)
@@ -25,7 +26,8 @@ shape = SubResource("PlayerCollision")
 [node name="DetectionArea" type="Area2D" parent="." unique_id=833298036]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1194647066]
-shape = SubResource("DetectionShape")
+position = Vector2(-21, 15)
+shape = SubResource("CapsuleShape2D_gfjak")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1020202834]
 zoom = Vector2(1.5, 1.5)
