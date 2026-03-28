@@ -305,6 +305,61 @@ Main (Node2D)
 
 ## Roadmap nach Phase 2
 
-- **Phase 3**: Gewehr-Schießen (Maus-Klick), Bullets mit Damage, T-Rex töten
+- **Phase 3**: Gewehr-Schießen (Leertaste), Bullets mit Damage, T-Rex töten
 - **Phase 4**: Brontosaurus + Quad Fahrzeuge
 - **Phase 5**: Endlos-Level, Score, Gameworld Expansion
+
+---
+
+# Plan: Phase 3 (Gewehr-Schießen mit Leertaste)
+
+## TL;DR
+Spieler kann nach Gewehr-Sammlung mit **Leertaste (Space)** in **Laufrichtung** schießen. Kugeln verursachen 10 HP Schaden und löschen sich automat. beim Bildschirmverlassen.
+
+## Architektur Phase 3
+
+**Neue Szenen:**
+```
+res://scenes/bullets/Bullet.tscn (CharacterBody2D)
+```
+
+## Components Phase 3
+
+### 1. Bullet.tscn + bullet.gd
+- CharacterBody2D mit Sprite2D, CollisionShape2D, VisibleOnScreenNotifier2D
+- Properties: speed=500, damage=10, direction, lifetime tracking
+- Funktionen: _ready() Signal verbinden, _physics_process() Movement, _on_screen_exited() queue_free
+
+### 2. Player.gd erweitern
+- Neue Properties: has_gun, gun_cooldown=0.3, gun_cooldown_timer, last_direction
+- _input(): Space + has_gun + cooldown OK -> _fire_gun()
+- _fire_gun(): Bullet spawn bei Player, direction=last_direction, Parent=Main
+- _physics_process: cooldown updaten, last_direction speichern
+- _on_item_entered: GUN -> has_gun=true
+
+### 3. T-Rex.gd update
+- _on_damage_area_entered erweitern: Bullet erkennen (area.name=="Bullet")
+- take_damage(10), area.queue_free()
+- Physics Layer: Enemies, Mask: World+Bullets
+
+### 4. Constants.gd
+- BULLET_SPEED=500, BULLET_DAMAGE=10, GUN_COOLDOWN=0.3
+
+## Implementierungs-Order
+1. Bullet.tscn + bullet.gd
+2. Player.gd - has_gun, _fire_gun(), _input
+3. T-Rex.gd - Bullet handling
+4. Main.tscn - Physics Layer
+5. Test
+
+## Verification Phase 3
+- [ ] Gun sammeln -> "Gun acquired"
+- [ ] Space ohne Gun -> nichts
+- [ ] Space mit Gun -> Kugel fliegt
+- [ ] Richtung folgt Bewegung
+- [ ] Kugel off-screen -> queue_free
+- [ ] Treffer T-Rex -> 10 HP Schaden
+- [ ] 10 Treffer -> T-Rex tot
+- [ ] Cooldown 0.3s funktioniert
+- [ ] Keine Memory Leaks
+
