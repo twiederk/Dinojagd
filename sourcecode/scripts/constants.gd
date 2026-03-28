@@ -40,7 +40,7 @@ const PLAYER_COLLECTION_RADIUS = 80.0
 
 # Spawn & World Konstanten
 const SPAWN_RADIUS = 400.0
-const SPAWN_COUNT_PER_ITEM_TYPE = 5
+const SPAWN_COUNT_PER_ITEM_TYPE = 1
 const SPAWN_CHECK_INTERVAL = 30.0  # Sekunden bis neues Spawning
 const MAX_DISTANCE_FROM_PLAYER = 1000.0  # Items werden entfernt wenn zu weit weg
 
