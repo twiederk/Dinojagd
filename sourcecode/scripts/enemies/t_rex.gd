@@ -17,7 +17,8 @@ var chase_speed: float = Constants.T_REX_CHASE_SPEED
 
 # AI State
 var target_player: CharacterBody2D = null
-var ai_mode: String = "PATROL"  # PATROL, CHASE, IDLE
+var ai_mode: String = "PATROL"  # PATROL, CHASE, IDLE, RETURN
+var start_position: Vector2 = Vector2.ZERO
 
 # Cooldowns
 var damage_cooldown: float = 0.0
@@ -27,6 +28,9 @@ signal health_changed(hp: int, max_hp: int)
 signal enemy_died
 
 func _ready() -> void:
+	# Startposition speichern
+	start_position = global_position
+	
 	# Sprite laden
 	if sprite:
 		sprite.texture = load(Constants.T_REX_SPRITE_PATH)
@@ -66,6 +70,16 @@ func _update_ai_movement() -> void:
 	if ai_mode == "CHASE" and target_player:
 		var direction = (target_player.global_position - global_position).normalized()
 		velocity = direction * chase_speed
+	elif ai_mode == "RETURN":
+		# Zurück zur Startposition
+		var distance_to_start = global_position.distance_to(start_position)
+		if distance_to_start > 5.0:  # 5 Pixel Toleranz
+			var direction = (start_position - global_position).normalized()
+			velocity = direction * speed
+		else:
+			# An Startposition angekommen
+			ai_mode = "PATROL"
+			velocity = Vector2.ZERO
 	elif ai_mode == "PATROL":
 		velocity = Vector2.ZERO
 	else:
@@ -84,9 +98,9 @@ func _on_detection_exited(area: Area2D) -> void:
 	"""Wird aufgerufen wenn der Player die DetectionArea verlässt."""
 	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
 	if is_player:
-		ai_mode = "PATROL"
+		ai_mode = "RETURN"
 		if Constants.DEBUG_MODE:
-			print("  → Player lost! Back to patrol")
+			print("  → Player lost! Returning to start position: %s" % start_position)
 
 func _on_damage_area_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn Player die DamageArea berührt."""
