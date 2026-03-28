@@ -1,7 +1,7 @@
 # Plan: Dinojagd - Phase 1 (Player + Item Collection)
 
 ## TL;DR
-Implementierung der Grundmechaniken: Spieler mit 2D-Bewegung (WASD), Item-Sammlung (E), einfaches Inventar-UI, und Spawning von Items (Gewehr, Gras, Sattel, Quad) in der offenen Spielwelt. Nach dieser Phase können wir T-Rex-KI und Kampf hinzufügen.
+Implementierung der Grundmechaniken: Spieler mit 2D-Bewegung (WASD / Pfeiltasten), Item-Sammlung durch einfaches berühren, Gegenstände (Gewehr, Gras, Sattel, Quad) in der offenen Spielwelt. Nach dieser Phase können wir T-Rex-KI und Kampf hinzufügen.
 
 ## Architektur-Grundlagen (Godot 4.x)
 
@@ -36,7 +36,13 @@ res://scripts/
 - `constants.gd` erstellen mit:
   - `enum ItemType { GUN, GRASS, SADDLE, QUAD }`
   - Item-Eigenschaften (Sprite-Pfade, Sammél-Radius)
-- `project.godot` prüfen: Assets importieren (Spieler.png, Gwer.png, Gras.png, Sattel.png, Quad.png)
+- Assets sind bereits vorhanden in `assets/`:
+  - `Spieler.png` (Spieler-Grafik)
+  - `Gwer.png` (Gewehr)
+  - `Gras.png` (Gras)
+  - `Sattel.png` (Sattel)
+  - `Quad.png` (Quad)
+- Sprites in constants.gd referenzieren: `res://assets/Spieler.png`, etc.
 
 ### 2. Player-Szene (Player.tscn + player.gd)
 **Struktur:**
@@ -66,7 +72,7 @@ Item (Area2D)
 
 **Script (item.gd):**
 - Export-Variable: `@export var item_type: ItemType`
-- `_ready()`: Sprite setzen basierend auf item_type (aus constants.gd)
+- `_ready()`: Sprite aus constants.gd laden basierend auf item_type (Pfade: `res://assets/Gwer.png`, `res://assets/Gras.png`, `res://assets/Sattel.png`, `res://assets/Quad.png`)
 - Optional: langsam rotieren/bobben für visuellen Effect
 - Signal `collected` (item_type, position) → Spawner kann reagieren (z.B. Timer reset)
 
@@ -115,11 +121,10 @@ HUD (CanvasLayer)
 
 ### 6. Eingabe & Steuerung
 - Input Map (Project Settings):
-  - `ui_move_up` → W
-  - `ui_move_down` → S
-  - `ui_move_left` → A
-  - `ui_move_right` → D
-  - `collect_item` → E (neue Action)
+  - `ui_move_up` → W + Oben-Pfeil ↑
+  - `ui_move_down` → S + Unten-Pfeil ↓
+  - `ui_move_left` → A + Links-Pfeil ←
+  - `ui_move_right` → D + Rechts-Pfeil →
 
 ## Implementorder (Empfehlungen)
 
@@ -143,9 +148,6 @@ HUD (CanvasLayer)
 
 ## Decisions
 
-- **Sammeln per E-Taste** statt Overlap-auto, weil: kontrolliert, besser für Gameplay-Feel
-- **Item-Respawn nach 30s**: Balance zwischen Endless-Feeling und Frustration
-- **Inventar als Dictionary**, nicht Array: flexibel für verschiedene Item-Typen
 - **Godot 4.x Features**: CharacterBody2D statt KinematicBody2D (3.x), `@export` statt `export()`
 - **Phasierung**: Sammeln vor Kämpfen, weil Grundmechanik stabiler machen
 
