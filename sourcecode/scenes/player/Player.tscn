@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://player"]
 
 [ext_resource type="Texture2D" uid="uid://qd7gns3gulhg" path="res://assets/Spieler.png" id="2_gfjak"]
-[ext_resource type="PackedScene" path="res://scenes/ui/HealthBar.tscn" id="3_4kuee"]
+[ext_resource type="PackedScene" uid="uid://cx8sse2fc02r1" path="res://scenes/ui/HealthBar.tscn" id="3_4kuee"]
 [ext_resource type="Script" uid="uid://bhq7xviagjy4k" path="res://scripts/player.gd" id="PlayerScript"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerCollision"]

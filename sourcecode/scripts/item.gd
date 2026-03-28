@@ -12,7 +12,7 @@ var Constants = preload("res://scripts/constants.gd")
 var bob_speed: float = 2.0
 var bob_amount: float = 10.0
 var starting_y: float = 0.0
-var rotation_speed: float = 1.0
+var rotation_speed: float = 0.0
 var elapsed_time: float = 0.0
 
 # Signals

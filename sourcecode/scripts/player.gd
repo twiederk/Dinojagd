@@ -104,12 +104,12 @@ func _on_item_entered(area: Area2D) -> void:
 
 func take_damage(amount: int) -> void:
 	"""Player nimmt Schaden."""
-	health_bar.value = hp
 	if not is_alive or damage_cooldown > 0:
 		return
 	
 	hp -= amount
 	damage_cooldown = Constants.PLAYER_DAMAGE_COOLDOWN
+	health_bar.value = hp
 	emit_signal("health_changed", hp, max_hp)
 	
 	if Constants.DEBUG_MODE:
