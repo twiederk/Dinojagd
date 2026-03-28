@@ -48,8 +48,8 @@ func _ready() -> void:
 	
 	# HealthBar initialisieren
 	if healthbar:
-		healthbar.update_health(hp, max_hp)
-		health_changed.connect(healthbar.update_health)
+		healthbar.max_value = max_hp
+		healthbar.value = hp
 	
 	if Constants.DEBUG_MODE:
 		print("✓ T-Rex spawned at %s" % global_position)
@@ -130,6 +130,7 @@ func _on_damage_area_entered(area: Area2D) -> void:
 func take_damage(amount: int) -> void:
 	"""T-Rex nimmt Schaden."""
 	hp -= amount
+	healthbar.value = hp
 	emit_signal("health_changed", hp, max_hp)
 	
 	if Constants.DEBUG_MODE:

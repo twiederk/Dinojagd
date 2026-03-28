@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://trex"]
 
 [ext_resource type="Texture2D" uid="uid://bpbctuxwbgkfa" path="res://assets/T-Rex.png" id="2_jsvau"]
-[ext_resource type="PackedScene" uid="uid://healthbar" path="res://scenes/enemies/HealthBar.tscn" id="HealthBarScene"]
+[ext_resource type="PackedScene" uid="uid://cx8sse2fc02r1" path="res://scenes/ui/HealthBar.tscn" id="3_jsvau"]
 [ext_resource type="Script" uid="uid://eev6erdnu085" path="res://scripts/enemies/t_rex.gd" id="TRexScript"]
 
 [sub_resource type="CapsuleShape2D" id="TRexCollision"]
@@ -16,7 +16,6 @@ radius = 145.05516
 
 [node name="TRex" type="CharacterBody2D" unique_id=301375274]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("TRexScript")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=382479882]
@@ -42,4 +41,8 @@ collision_mask = 6
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1526993828]
 shape = SubResource("DamageShape")
 
-[node name="HealthBar" parent="." unique_id=359376764 instance=ExtResource("HealthBarScene")]
+[node name="HealthBar" parent="." unique_id=1656506452 instance=ExtResource("3_jsvau")]
+offset_left = -116.0
+offset_top = 66.0
+offset_right = 114.0
+offset_bottom = 81.0
