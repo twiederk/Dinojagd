@@ -28,6 +28,10 @@ func _ready() -> void:
 	# Camera Setup
 	if camera:
 		camera.make_current()
+	
+	# Verbinde DetectionArea mit Auto-Sammeln
+	if detection_area:
+		detection_area.area_entered.connect(_on_item_entered)
 
 func _physics_process(delta: float) -> void:
 	# Input-Vektor sammeln (WASD + Pfeiltasten)
@@ -59,30 +63,29 @@ func _physics_process(delta: float) -> void:
 		pass
 
 func _input(event: InputEvent) -> void:
-	# E-Taste zum Sammeln von Items
-	if event.is_action_pressed("collect_item"):
-		_collect_nearby_items()
+	# E-Taste entfernt - Items sammeln automatisch per Berührung
+	pass
+
+func _on_item_entered(area: Area2D) -> void:
+	"""Wird aufgerufen wenn ein Item die DetectionArea betritt."""
+	if area.is_in_group("items"):
+		var item_type = area.item_type
+		
+		# Item zum Inventar hinzufügen
+		if item_type in inventory:
+			inventory[item_type] += 1
+			emit_signal("item_collected", item_type, inventory[item_type])
+			
+			# Item aus der Welt entfernen
+			area.queue_free()
+		
+		if Constants.DEBUG_MODE:
+			var display_name = Constants.ITEM_DATA[item_type]["display_name"]
+			print("✓ Item collected: %s (Total: %d)" % [display_name, inventory[item_type]])
 
 func _collect_nearby_items() -> void:
-	"""Sammelt alle Items die sich in der Detection Area überlappen."""
-	var overlapping_areas = detection_area.get_overlapping_areas()
-	
-	for area in overlapping_areas:
-		# Prüfe ob Area ein Item ist (muss 'item_type' Export-Var haben)
-		if area.is_in_group("items"):
-			var item_type = area.item_type
-			
-			# Item zum Inventar hinzufügen
-			if item_type in inventory:
-				inventory[item_type] += 1
-				emit_signal("item_collected", item_type, inventory[item_type])
-				
-				# Item aus der Welt entfernen
-				area.queue_free()
-			
-			if Constants.DEBUG_MODE:
-				var display_name = Constants.ITEM_DATA[item_type]["display_name"]
-				print("✓ Item collected: %s (Total: %d)" % [display_name, inventory[item_type]])
+	"""Deprecated - Items sammeln automatisch per Berührung."""
+	pass
 
 func get_inventory() -> Dictionary:
 	"""Gibt das aktuelle Inventar zurück."""
