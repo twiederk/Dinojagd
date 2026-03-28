@@ -62,16 +62,11 @@ func _physics_process(delta: float) -> void:
 	# Apply movement
 	move_and_slide()
 	
-	# Debug: AI Mode anzeigen
-	if Constants.DEBUG_MODE:
-		#print("T-Rex Mode: %s, HP: %d" % [ai_mode, hp])
-		pass
-
 func _update_ai_movement() -> void:
 	"""Update die Bewegung basierend auf AI-Mode."""
 	if ai_mode == "CHASE" and target_player:
 		var direction = (target_player.global_position - global_position).normalized()
-		current_velocity = direction * chase_speed
+		velocity = direction * chase_speed
 	elif ai_mode == "PATROL":
 		# Zufällige Patrol-Bewegung (später implementiert)
 		current_velocity = Vector2.ZERO
