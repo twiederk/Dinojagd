@@ -1,8 +1,9 @@
 extends CharacterBody2D
 
+var Constants = preload("res://scripts/constants.gd")
+
 # Physics
 var speed: float = Constants.PLAYER_SPEED
-var velocity: Vector2 = Vector2.ZERO
 
 # Inventar: Dict[ItemType, int]
 var inventory: Dictionary = {}
@@ -50,7 +51,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 	
 	# Bewegung anwenden
-	velocity = move_and_slide(velocity)
+	move_and_slide()
 	
 	# Debug: Position anzeigen (optional)
 	if Constants.DEBUG_MODE:

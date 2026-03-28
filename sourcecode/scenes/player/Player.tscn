@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://player"]
+[gd_scene format=3 uid="uid://player"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="PlayerScript"]
+[ext_resource type="Texture2D" uid="uid://qd7gns3gulhg" path="res://assets/Spieler.png" id="2_gfjak"]
+[ext_resource type="Script" uid="uid://bhq7xviagjy4k" path="res://scripts/player.gd" id="PlayerScript"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerCollision"]
 radius = 12.0
@@ -9,21 +10,22 @@ height = 32.0
 [sub_resource type="CircleShape2D" id="DetectionShape"]
 radius = 80.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=212906186]
 position = Vector2(640, 360)
 script = ExtResource("PlayerScript")
 
-[node name="AnimatedSprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="Sprite2D" parent="." unique_id=334063367]
 scale = Vector2(2, 2)
+texture = ExtResource("2_gfjak")
 offset = Vector2(0, -8)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1969833680]
 shape = SubResource("PlayerCollision")
 
-[node name="DetectionArea" type="Area2D" parent="."]
+[node name="DetectionArea" type="Area2D" parent="." unique_id=833298036]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1194647066]
 shape = SubResource("DetectionShape")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1020202834]
 zoom = Vector2(1.5, 1.5)

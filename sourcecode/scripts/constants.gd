@@ -2,7 +2,7 @@ extends Node
 
 # ItemType Enum - definiert alle sammelbaren Items
 enum ItemType {
-	GUN,      # Gewehr - Gwer.png
+	GUN,      # Gewehr - Gewehr.png
 	GRASS,    # Gras - Gras.png
 	SADDLE,   # Sattel - Sattel.png
 	QUAD      # Quad - Quad.png
@@ -11,7 +11,7 @@ enum ItemType {
 # Item Metadaten - Sprite-Pfade und Properties
 const ITEM_DATA = {
 	ItemType.GUN: {
-		"sprite_path": "res://assets/Gwer.png",
+		"sprite_path": "res://assets/Gewehr.png",
 		"display_name": "Gewehr",
 		"collection_radius": 50.0
 	},

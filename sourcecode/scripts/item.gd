@@ -1,7 +1,9 @@
 extends Area2D
 
+var Constants = preload("res://scripts/constants.gd")
+
 # Export: Item-Typ wird im Editor gesetzt
-@export var item_type: int = Constants.ItemType.GUN
+@export var item_type: int = 0
 
 # Sprite
 @onready var sprite = $Sprite2D

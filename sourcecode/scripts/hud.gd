@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+var Constants = preload("res://scripts/constants.gd")
+
 # UI References
 var inventory_labels: Dictionary = {}
 

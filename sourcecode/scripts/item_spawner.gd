@@ -1,5 +1,7 @@
 extends Node2D
 
+var Constants = preload("res://scripts/constants.gd")
+
 # Item-Szene preload
 var item_scene = preload("res://scenes/items/Item.tscn")
 
