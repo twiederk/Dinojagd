@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cx8sse2fc02r1"]
+
+[ext_resource type="Theme" uid="uid://20cyfv7fbb8u" path="res://scenes/ui/HealthBarTheme.tres" id="1"]
+
+[node name="HealthBar" type="ProgressBar" unique_id=1656506452]
+offset_right = 66.0
+offset_bottom = 15.0
+theme = ExtResource("1")
+value = 50.0
+show_percentage = false

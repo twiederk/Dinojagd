@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://player"]
 
 [ext_resource type="Texture2D" uid="uid://qd7gns3gulhg" path="res://assets/Spieler.png" id="2_gfjak"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HealthBar.tscn" id="3_4kuee"]
 [ext_resource type="Script" uid="uid://bhq7xviagjy4k" path="res://scripts/player.gd" id="PlayerScript"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerCollision"]
@@ -34,3 +35,9 @@ shape = SubResource("CapsuleShape2D_gfjak")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1020202834]
 zoom = Vector2(1.5, 1.5)
+
+[node name="HealthBar" parent="." unique_id=432356171 instance=ExtResource("3_4kuee")]
+offset_left = -54.0
+offset_top = 95.0
+offset_right = 12.0
+offset_bottom = 120.0

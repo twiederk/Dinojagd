@@ -18,6 +18,7 @@ var is_alive: bool = true
 @onready var sprite = $AnimatedSprite2D
 @onready var detection_area = $DetectionArea
 @onready var camera = $Camera2D
+@onready var health_bar = $HealthBar
 
 # Signals
 signal item_collected(item_type: int, count: int)
@@ -43,6 +44,9 @@ func _ready() -> void:
 	# Verbinde DetectionArea mit Auto-Sammeln
 	if detection_area:
 		detection_area.area_entered.connect(_on_item_entered)
+		
+	health_bar.max_value = max_hp
+	health_bar.value = hp
 
 func _physics_process(delta: float) -> void:
 	# Update Cooldowns
@@ -100,6 +104,7 @@ func _on_item_entered(area: Area2D) -> void:
 
 func take_damage(amount: int) -> void:
 	"""Player nimmt Schaden."""
+	health_bar.value = hp
 	if not is_alive or damage_cooldown > 0:
 		return
 	
@@ -125,6 +130,10 @@ func _player_die() -> void:
 	# Optional: Später GameOver-Szene oder Respawn
 	# Für jetzt: einfach erstarren
 	velocity = Vector2.ZERO
+	position = Vector2.ZERO
+	hp = 100
+	health_bar.value = hp
+	
 
 func _collect_nearby_items() -> void:
 	"""Deprecated - Items sammeln automatisch per Berührung."""
