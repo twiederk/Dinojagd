@@ -90,10 +90,12 @@ func _on_detection_exited(area: Area2D) -> void:
 
 func _on_damage_area_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn Player die DamageArea berührt."""
-	if area.is_in_group("player") and damage_cooldown <= 0:
+	print("Player detected in T-Rex DAMAGE area!")
+	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
+	if is_player and damage_cooldown <= 0:
 		# Schaden auf Player zufügen
-		if area.has_method("take_damage"):
-			area.take_damage(damage)
+		if area.get_parent().has_method("take_damage"):
+			area.get_parent().take_damage(damage)
 			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
 			
 			if Constants.DEBUG_MODE:
