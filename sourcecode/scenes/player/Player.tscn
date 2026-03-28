@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://player"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="PlayerScript"]
+
+[sub_resource type="CapsuleShape2D" id="PlayerCollision"]
+radius = 12.0
+height = 32.0
+
+[sub_resource type="CircleShape2D" id="DetectionShape"]
+radius = 80.0
+
+[node name="Player" type="CharacterBody2D"]
+position = Vector2(640, 360)
+script = ExtResource("PlayerScript")
+
+[node name="AnimatedSprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+offset = Vector2(0, -8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("PlayerCollision")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("DetectionShape")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
