@@ -21,6 +21,6 @@ color = Color(0.2, 0.7, 0.2, 1)
 script = ExtResource("ItemSpawnerScript")
 
 [node name="TRex" parent="." unique_id=1511423132 instance=ExtResource("TRexScene")]
-position = Vector2(1026, 561)
+position = Vector2(360, 192)
 
 [node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]

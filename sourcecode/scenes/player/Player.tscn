@@ -4,15 +4,15 @@
 [ext_resource type="Script" uid="uid://bhq7xviagjy4k" path="res://scripts/player.gd" id="PlayerScript"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerCollision"]
-radius = 12.0
-height = 32.0
+radius = 31.0
+height = 150.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gfjak"]
 radius = 51.0
 height = 172.0
 
 [node name="Player" type="CharacterBody2D" unique_id=212906186]
-position = Vector2(640, 360)
+collision_layer = 2
 script = ExtResource("PlayerScript")
 
 [node name="AnimatedSprite2D" type="Sprite2D" parent="." unique_id=334063367]
@@ -21,9 +21,12 @@ texture = ExtResource("2_gfjak")
 offset = Vector2(0, -8)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1969833680]
+position = Vector2(-20, 14)
 shape = SubResource("PlayerCollision")
+debug_color = Color(0.9214912, 0.24244872, 0.36576533, 0.41960785)
 
 [node name="DetectionArea" type="Area2D" parent="." unique_id=833298036]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1194647066]
 position = Vector2(-21, 15)

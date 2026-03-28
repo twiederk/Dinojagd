@@ -5,17 +5,16 @@
 [ext_resource type="Script" uid="uid://eev6erdnu085" path="res://scripts/enemies/t_rex.gd" id="TRexScript"]
 
 [sub_resource type="CapsuleShape2D" id="TRexCollision"]
-radius = 16.0
-height = 48.0
+radius = 111.0
+height = 222.0
 
 [sub_resource type="CircleShape2D" id="DetectionShape"]
 radius = 304.0411
 
 [sub_resource type="CircleShape2D" id="DamageShape"]
-radius = 126.01587
+radius = 145.05516
 
 [node name="TRex" type="CharacterBody2D" unique_id=301375274]
-position = Vector2(800, 400)
 script = ExtResource("TRexScript")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=382479882]
@@ -25,8 +24,11 @@ offset = Vector2(0, -8)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1876920885]
 shape = SubResource("TRexCollision")
+debug_color = Color(0.8820708, 0.2983277, 0.41178253, 0.41960785)
 
 [node name="DetectionArea" type="Area2D" parent="." unique_id=287332922]
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=361795557]
 shape = SubResource("DetectionShape")

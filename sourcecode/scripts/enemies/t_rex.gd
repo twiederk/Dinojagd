@@ -80,7 +80,9 @@ func _update_ai_movement() -> void:
 
 func _on_detection_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn det Player endet die DetectionArea betritt."""
-	if area.is_in_group("player"):
+	print("Player detected in T-Rex detection area!")
+	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
+	if is_player:
 		ai_mode = "CHASE"
 		if Constants.DEBUG_MODE:
 			print("  → T-Rex detected Player! Chase mode activated")

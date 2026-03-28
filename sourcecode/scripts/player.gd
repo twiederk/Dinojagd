@@ -141,8 +141,3 @@ func has_item(item_type: int) -> bool:
 func get_item_count(item_type: int) -> int:
 	"""Gibt die Anzahl eines bestimmten Items zurück."""
 	return inventory.get(item_type, 0)
-
-# Debug: Zeichne Collection Radius in der Szene
-func _draw() -> void:
-	if Constants.DEBUG_MODE and Constants.DRAW_COLLECTION_RADIUS:
-		draw_circle(Vector2.ZERO, Constants.PLAYER_COLLECTION_RADIUS, Color.YELLOW)
