@@ -69,6 +69,11 @@ const PLAYER_HP = 100
 const PLAYER_MAX_HP = 100
 const PLAYER_DAMAGE_COOLDOWN = 1.0
 
+# Bullet/Gun Konstanten (Phase 3)
+const BULLET_SPEED = 500.0
+const BULLET_DAMAGE = 10
+const GUN_COOLDOWN = 0.3  # Sekunden zwischen Schüssen
+
 # HealthBar UI
 const HEALTHBAR_WIDTH = 60
 const HEALTHBAR_HEIGHT = 8

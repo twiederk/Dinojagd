@@ -14,6 +14,12 @@ var max_hp: int = Constants.PLAYER_MAX_HP
 var damage_cooldown: float = 0.0
 var is_alive: bool = true
 
+# Gun System (Phase 3)
+var has_gun: bool = false
+var gun_cooldown_timer: float = 0.0
+var last_direction: Vector2 = Vector2.RIGHT  # Standard-Richtung
+var BulletScene = preload("res://scenes/bullets/Bullet.tscn")
+
 # References
 @onready var sprite = $AnimatedSprite2D
 @onready var detection_area = $DetectionArea
@@ -52,6 +58,8 @@ func _physics_process(delta: float) -> void:
 	# Update Cooldowns
 	if damage_cooldown > 0:
 		damage_cooldown -= delta
+	if gun_cooldown_timer > 0:
+		gun_cooldown_timer -= delta
 	
 	# Input-Vektor sammeln (WASD + Pfeiltasten)
 	var input_vector = Vector2.ZERO
@@ -70,6 +78,8 @@ func _physics_process(delta: float) -> void:
 	if input_vector.length() > 0:
 		input_vector = input_vector.normalized()
 		velocity = input_vector * speed
+		# Letzte Bewegungsrichtung speichern für Schuss
+		last_direction = input_vector
 	else:
 		velocity = Vector2.ZERO
 	
@@ -82,8 +92,25 @@ func _physics_process(delta: float) -> void:
 		pass
 
 func _input(event: InputEvent) -> void:
-	# E-Taste entfernt - Items sammeln automatisch per Berührung
-	pass
+	# Leertaste zum Schießen (wenn Gewehr vorhanden)
+	if event.is_action_pressed("ui_accept"):
+		if has_gun and gun_cooldown_timer <= 0:
+			_fire_gun()
+
+func _fire_gun() -> void:
+	"""Feuert eine Kugel in die letzte Bewegungsrichtung."""
+	gun_cooldown_timer = Constants.GUN_COOLDOWN
+	
+	# Bullet erstellen
+	var bullet = BulletScene.instantiate()
+	bullet.global_position = global_position
+	bullet.set_direction(last_direction)
+	
+	# Bullet zur Hauptszene hinzufügen (nicht als Child vom Player)
+	get_tree().root.get_child(0).add_child(bullet)
+	
+	if Constants.DEBUG_MODE:
+		print("🔫 Player fired gun in direction: %s" % last_direction)
 
 func _on_item_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn ein Item die DetectionArea betritt."""
@@ -94,6 +121,12 @@ func _on_item_entered(area: Area2D) -> void:
 		if item_type in inventory:
 			inventory[item_type] += 1
 			emit_signal("item_collected", item_type, inventory[item_type])
+			
+			# Prüfe ob Gewehr gesammelt wurde
+			if item_type == Constants.ItemType.GUN:
+				has_gun = true
+				if Constants.DEBUG_MODE:
+					print("🔫 Gun acquired! Press SPACE to shoot.")
 			
 			# Item aus der Welt entfernen
 			area.queue_free()

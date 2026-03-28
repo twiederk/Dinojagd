@@ -103,7 +103,19 @@ func _on_detection_exited(area: Area2D) -> void:
 			print("  → Player lost! Returning to start position: %s" % start_position)
 
 func _on_damage_area_entered(area: Area2D) -> void:
-	"""Wird aufgerufen wenn Player die DamageArea berührt."""
+	"""Wird aufgerufen wenn Player oder Bullet die DamageArea berührt."""
+	# Prüfe ob Bullet getroffen hat
+	if area.is_in_group("bullets"):
+		if area.has_method("damage"):
+			take_damage(area.damage)
+		else:
+			take_damage(Constants.BULLET_DAMAGE)
+		area.queue_free()
+		if Constants.DEBUG_MODE:
+			print("  → T-Rex hit by bullet!")
+		return
+	
+	# Prüfe ob Player berührt
 	print("Player detected in T-Rex DAMAGE area!")
 	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
 	if is_player and damage_cooldown <= 0:
