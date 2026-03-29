@@ -78,6 +78,17 @@ func _physics_process(delta: float) -> void:
 	# Apply movement
 	move_and_slide()
 
+func _input(event: InputEvent) -> void:
+	# E-Taste zum Absteigen wenn gemounted
+	if event.is_action_pressed("interact") and current_state == State.MOUNTED:
+		if rider:
+			# Informiere den Player dass er abgestiegen ist
+			rider.is_mounted = false
+			rider.current_mount = null
+			dismount()
+			if Constants.DEBUG_MODE:
+				print("🦕 Dismount via E-Taste")
+
 func _wander_movement(delta: float) -> void:
 	"""Zufälliges Wandern wenn nicht gemounted."""
 	wander_timer -= delta
