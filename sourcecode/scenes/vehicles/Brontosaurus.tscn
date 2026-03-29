@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://ckna4ajkljefh" path="res://scripts/vehicles/brontosaurus.gd" id="3_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
-radius = 80.0
-height = 200.0
+radius = 74.0
+height = 148.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
 radius = 150.0

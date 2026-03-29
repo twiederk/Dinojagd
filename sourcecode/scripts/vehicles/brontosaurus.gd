@@ -38,6 +38,9 @@ signal player_nearby(bronto: CharacterBody2D)
 signal player_left
 
 func _ready() -> void:
+	# Zur "vehicles" Gruppe hinzufügen (für T-Rex Damage)
+	add_to_group("vehicles")
+	
 	# Startposition speichern
 	start_position = global_position
 	wander_target = _get_random_wander_target()

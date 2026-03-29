@@ -118,6 +118,18 @@ func _on_damage_area_entered(area: Area2D) -> void:
 			print("  → T-Rex hit by bullet!")
 		return
 	
+	# Prüfe ob Brontosaurus berührt wird (wenn Spieler drauf sitzt)
+	var parent = area.get_parent()
+	if parent and parent.is_in_group("vehicles") and parent.has_method("is_mounted") and parent.is_mounted() and damage_cooldown <= 0:
+		# Schaden auf Brontosaurus zufügen wenn Spieler drauf sitzt
+		if parent.has_method("take_damage"):
+			parent.take_damage(damage)
+			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+			
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex dealt %d damage to Brontosaurus!" % damage)
+		return
+	
 	# Prüfe ob Player berührt
 	print("Player detected in T-Rex DAMAGE area!")
 	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
