@@ -187,7 +187,11 @@ func _on_interaction_area_exited(area: Area2D) -> void:
 		emit_signal("player_left")
 
 func _on_damage_area_body_entered(body: Node2D) -> void:
-	"""Kollision mit T-Rex - Schaden zufügen."""
+	"""Kollision mit T-Rex - Schaden zufügen nur wenn geritten."""
+	# Nur Schaden machen wenn der Spieler reitet
+	if current_state != State.MOUNTED:
+		return
+	
 	if body.is_in_group("enemies") and damage_cooldown <= 0:
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
