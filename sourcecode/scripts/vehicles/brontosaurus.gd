@@ -29,6 +29,7 @@ var damage_cooldown: float = 0.0
 @onready var interaction_area = $InteractionArea
 @onready var damage_area = $DamageArea
 @onready var healthbar = $HealthBar
+@onready var camera = $Camera2D
 
 # Signals
 signal health_changed(hp: int, max_hp: int)
@@ -147,6 +148,11 @@ func mount(player: CharacterBody2D) -> void:
 	# Player Position an Brontosaurus koppeln
 	player.global_position = global_position
 	
+	# Kamera zum Brontosaurus wechseln
+	if camera:
+		camera.enabled = true
+		camera.make_current()
+	
 	if Constants.DEBUG_MODE:
 		print("🦕 Player mounted Brontosaurus!")
 
@@ -162,6 +168,12 @@ func dismount() -> Vector2:
 	rider.set_physics_process(true)
 	rider.set_process_input(true)
 	rider.global_position = dismount_pos
+	
+	# Kamera zurück zum Player wechseln
+	if camera:
+		camera.enabled = false
+	if rider.has_node("Camera2D"):
+		rider.get_node("Camera2D").make_current()
 	
 	rider = null
 	current_state = State.WANDERING
