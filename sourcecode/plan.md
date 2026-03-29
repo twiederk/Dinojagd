@@ -363,3 +363,260 @@ res://scenes/bullets/Bullet.tscn (CharacterBody2D)
 - [ ] Cooldown 0.3s funktioniert
 - [ ] Keine Memory Leaks
 
+---
+
+# Plan: Phase 4 (Brontosaurus + Quad Fahrzeuge)
+
+## TL;DR
+Spieler kann **Brontosaurus reiten** (wenn Gras + Sattel gesammelt) und **Quad fahren** (wenn Quad eingesammelt). Brontosaurus kann T-Rex durch Kollision Schaden zufügen. Quad gibt Speed-Boost. Beide Modi mit **E-Taste** / **Q-Taste** aktivieren/deaktivieren.
+
+## Architektur Phase 4
+
+**Neue Szenen:**
+```
+res://scenes/vehicles/
+├── Brontosaurus.tscn (CharacterBody2D - reitbares Mount)
+└── Quad.tscn (Node2D - wird an Player attached)
+
+res://scripts/vehicles/
+├── brontosaurus.gd (NPC-Bewegung + Mount-Logik)
+└── quad.gd (Speed-Boost Logik)
+```
+
+## Gameplay-Konzept
+
+### Brontosaurus (Mount)
+- **Voraussetzung**: Player hat Gras UND Sattel im Inventar
+- **Aktivierung**: Spieler nähert sich Brontosaurus + drückt **E-Taste**
+- **Im Mount-Modus**:
+  - Player-Sprite wird versteckt, Brontosaurus-Sprite bewegt sich
+  - Bewegungsgeschwindigkeit: 180 (etwas langsamer als Player)
+  - Brontosaurus kann T-Rex durch Kollision 25 HP Schaden zufügen
+  - Brontosaurus hat eigene HP (150) - kann von T-Rex angegriffen werden
+- **Absteigen**: **E-Taste** erneut drücken → Player spawnt neben Brontosaurus
+
+### Quad (Fahrzeug)
+- **Voraussetzung**: Player hat Quad im Inventar (einmalig einsammeln)
+- **Aktivierung**: **Q-Taste** drücken (Toggle on/off)
+- **Im Quad-Modus**:
+  - Player-Sprite wechselt zu Quad-Sprite
+  - Bewegungsgeschwindigkeit: 400 (doppelt so schnell)
+  - Kann NICHT schießen während auf Quad
+  - Quad nimmt keinen Schaden von T-Rex (zu schnell)
+- **Absteigen**: **Q-Taste** erneut drücken
+
+## Components Phase 4
+
+### 1. constants.gd erweitern
+```gdscript
+# Brontosaurus Konstanten
+const BRONTOSAURUS_SPRITE_PATH = "res://assets/Brontosaurus.png"
+const BRONTOSAURUS_HP = 150
+const BRONTOSAURUS_MAX_HP = 150
+const BRONTOSAURUS_SPEED = 120.0          # Wander-Speed
+const BRONTOSAURUS_MOUNT_SPEED = 180.0    # Reiten-Speed
+const BRONTOSAURUS_DAMAGE = 25            # Schaden gegen T-Rex
+const BRONTOSAURUS_DAMAGE_COOLDOWN = 1.5
+
+# Quad Konstanten
+const QUAD_SPRITE_PATH = "res://assets/Quad.png"
+const QUAD_SPEED = 400.0                  # Doppelte Player-Speed
+```
+
+### 2. Brontosaurus.tscn + brontosaurus.gd
+
+**Szenen-Struktur:**
+```
+Brontosaurus (CharacterBody2D)
+├── Sprite2D (Brontosaurus.png, scale 2x)
+├── CollisionShape2D (CapsuleShape größer als Player)
+├── InteractionArea (Area2D - für E-Taste Interaktion)
+│   └── CollisionShape2D (CircleShape, radius 100)
+├── DamageArea (Area2D - für T-Rex Kollision)
+│   └── CollisionShape2D (CapsuleShape)
+└── HealthBar (wie T-Rex)
+```
+
+**Script (brontosaurus.gd):**
+```gdscript
+# States
+enum State { WANDERING, MOUNTED, IDLE }
+var current_state: State = State.WANDERING
+
+# Properties
+var hp: int = BRONTOSAURUS_HP
+var rider: CharacterBody2D = null  # Referenz zum Player
+var wander_target: Vector2 = Vector2.ZERO
+var wander_timer: float = 0.0
+
+# Funktionen
+func _physics_process(delta):
+    match current_state:
+        State.WANDERING: _wander_movement(delta)
+        State.MOUNTED: _mounted_movement(delta)
+        State.IDLE: pass
+
+func mount(player: CharacterBody2D):
+    rider = player
+    current_state = State.MOUNTED
+    player.visible = false
+    player.set_physics_process(false)
+
+func dismount() -> Vector2:
+    var dismount_pos = global_position + Vector2(80, 0)
+    rider.visible = true
+    rider.set_physics_process(true)
+    rider.global_position = dismount_pos
+    rider = null
+    current_state = State.WANDERING
+    return dismount_pos
+
+func _on_damage_area_entered(body):
+    if body is T-Rex: body.take_damage(BRONTOSAURUS_DAMAGE)
+```
+
+### 3. Player.gd erweitern
+
+**Neue Properties:**
+```gdscript
+# Mount/Vehicle System
+var is_mounted: bool = false
+var current_mount: CharacterBody2D = null  # Brontosaurus Referenz
+var is_on_quad: bool = false
+var has_quad: bool = false
+var nearby_brontosaurus: CharacterBody2D = null
+```
+
+**Neue Funktionen:**
+```gdscript
+func _input(event):
+    # E-Taste: Mount/Dismount Brontosaurus
+    if event.is_action_pressed("interact"):  # E-Taste
+        if is_mounted:
+            _dismount_brontosaurus()
+        elif nearby_brontosaurus and _can_mount():
+            _mount_brontosaurus(nearby_brontosaurus)
+    
+    # Q-Taste: Quad Toggle
+    if event.is_action_pressed("toggle_quad"):  # Q-Taste
+        if has_quad:
+            _toggle_quad()
+
+func _can_mount() -> bool:
+    return has_item(ItemType.GRASS) and has_item(ItemType.SADDLE)
+
+func _mount_brontosaurus(bronto: CharacterBody2D):
+    is_mounted = true
+    current_mount = bronto
+    bronto.mount(self)
+    # Verbrauche Gras (Sattel bleibt)
+    inventory[ItemType.GRASS] -= 1
+
+func _dismount_brontosaurus():
+    if current_mount:
+        current_mount.dismount()
+        is_mounted = false
+        current_mount = null
+
+func _toggle_quad():
+    is_on_quad = !is_on_quad
+    if is_on_quad:
+        speed = Constants.QUAD_SPEED
+        sprite.texture = load(Constants.QUAD_SPRITE_PATH)
+    else:
+        speed = Constants.PLAYER_SPEED
+        sprite.texture = load(Constants.PLAYER_SPRITE_PATH)
+
+func _on_brontosaurus_nearby(bronto):
+    nearby_brontosaurus = bronto
+    if _can_mount():
+        # UI Hint: "E zum Aufsteigen"
+
+func _on_brontosaurus_left():
+    nearby_brontosaurus = null
+```
+
+### 4. Input Map erweitern (project.godot)
+- `interact` → E-Taste (Brontosaurus mount/dismount)
+- `toggle_quad` → Q-Taste (Quad an/aus)
+
+### 5. Main.tscn erweitern
+```
+Main (Node2D)
+├── WorldBackground
+├── Player
+├── ItemSpawner
+├── TRex
+├── Brontosaurus (neue Instanz)
+└── HUD
+```
+
+### 6. HUD.gd erweitern
+- Anzeige: "E: Aufsteigen" wenn Brontosaurus in Reichweite + Gras+Sattel vorhanden
+- Anzeige: "Q: Quad" wenn Quad im Inventar
+- Brontosaurus HP-Bar wenn gemounted
+
+## Implementierungs-Order Phase 4
+
+1. **constants.gd** - Brontosaurus + Quad Konstanten
+2. **Input Map** - E und Q Tasten konfigurieren
+3. **Brontosaurus.tscn + brontosaurus.gd** - NPC mit Wander-KI
+4. **Player.gd** - Mount-System (is_mounted, nearby detection)
+5. **Brontosaurus mount()** - Player aufsteigen lassen
+6. **Brontosaurus Kampf** - T-Rex Schaden bei Kollision
+7. **Quad-System** - Speed-Toggle im Player
+8. **HUD Updates** - Interaktions-Hinweise
+9. **Main.tscn** - Brontosaurus spawnen
+10. **Test & Balance**
+
+## Verification Phase 4
+
+### Brontosaurus Tests
+- [ ] Brontosaurus spawnt und wandert zufällig
+- [ ] Brontosaurus hat HealthBar (150 HP)
+- [ ] Ohne Gras+Sattel: E-Taste zeigt Hinweis "Benötigt Gras und Sattel"
+- [ ] Mit Gras+Sattel: E-Taste → Player steigt auf
+- [ ] Im Mount: Player-Sprite versteckt
+- [ ] Im Mount: Bewegung mit WASD steuert Brontosaurus
+- [ ] Im Mount: E-Taste → Absteigen neben Brontosaurus
+- [ ] Brontosaurus kollidiert mit T-Rex → 25 HP Schaden
+- [ ] Brontosaurus kann sterben (HP = 0)
+- [ ] Nach Brontosaurus-Tod: Player automatisch abgeworfen
+
+### Quad Tests
+- [ ] Quad einsammeln → "Quad acquired"
+- [ ] Q ohne Quad → nichts
+- [ ] Q mit Quad → Sprite wechselt zu Quad
+- [ ] Auf Quad: Speed = 400 (merklich schneller)
+- [ ] Auf Quad: Space zum Schießen deaktiviert
+- [ ] Q erneut → zurück zu Player-Sprite + normale Speed
+- [ ] Quad bleibt im Inventar (unbegrenzt nutzbar)
+
+### Integrations-Tests
+- [ ] Kann nicht auf Quad UND Brontosaurus gleichzeitig
+- [ ] Quad-Modus deaktiviert "E zum Aufsteigen"
+- [ ] T-Rex ignoriert Quad-Spieler (optional: zu schnell)
+- [ ] HUD zeigt korrekten Status
+
+## Decisions Phase 4
+
+- **E-Taste für Mount**: Konsistent mit anderen Spielen (Interaktion)
+- **Q-Taste für Quad**: Separater Keybind, da Fahrzeug-Toggle häufig
+- **Gras wird verbraucht**: Balancing - Mount ist mächtig, kostet Resource
+- **Sattel bleibt**: Einmal gefunden, immer nutzbar
+- **Quad = Immunität gegen T-Rex**: Reward für Item-Findung
+- **Brontosaurus wandert**: Macht Welt lebendiger, Player muss ihn finden
+- **Brontosaurus kann sterben**: Strategische Komponente
+
+## Assets Phase 4
+
+- **Brontosaurus.png** ✓ vorhanden in `assets/`
+- **Quad.png** ✓ vorhanden in `assets/`
+- Sprite-Skalierung: 2x wie andere Entities
+
+---
+
+## Roadmap nach Phase 4
+
+- **Phase 5**: Endlos-Level, Score-System, mehr T-Rex Spawns, Difficulty Scaling
+
