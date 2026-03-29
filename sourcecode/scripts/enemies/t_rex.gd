@@ -28,6 +28,9 @@ signal health_changed(hp: int, max_hp: int)
 signal enemy_died
 
 func _ready() -> void:
+	# Zur "enemies" Gruppe hinzufügen (für Brontosaurus Damage)
+	add_to_group("enemies")
+	
 	# Startposition speichern
 	start_position = global_position
 	

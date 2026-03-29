@@ -20,6 +20,14 @@ var gun_cooldown_timer: float = 0.0
 var last_direction: Vector2 = Vector2.RIGHT  # Standard-Richtung
 var BulletScene = preload("res://scenes/bullets/Bullet.tscn")
 
+# Mount/Vehicle System (Phase 4)
+var is_mounted: bool = false
+var current_mount: CharacterBody2D = null  # Brontosaurus Referenz
+var is_on_quad: bool = false
+var has_quad: bool = false
+var nearby_brontosaurus: CharacterBody2D = null
+var original_speed: float = 0.0
+
 # References
 @onready var sprite = $AnimatedSprite2D
 @onready var detection_area = $DetectionArea
@@ -92,10 +100,25 @@ func _physics_process(delta: float) -> void:
 		pass
 
 func _input(event: InputEvent) -> void:
-	# Leertaste zum Schießen (wenn Gewehr vorhanden)
+	# Leertaste zum Schießen (wenn Gewehr vorhanden und nicht auf Quad)
 	if event.is_action_pressed("ui_accept"):
-		if has_gun and gun_cooldown_timer <= 0:
+		if has_gun and gun_cooldown_timer <= 0 and not is_on_quad and not is_mounted:
 			_fire_gun()
+	
+	# E-Taste: Mount/Dismount Brontosaurus
+	if event.is_action_pressed("interact"):
+		if is_mounted:
+			_dismount_brontosaurus()
+		elif nearby_brontosaurus and _can_mount() and not is_on_quad:
+			_mount_brontosaurus(nearby_brontosaurus)
+		elif nearby_brontosaurus and not _can_mount():
+			if Constants.DEBUG_MODE:
+				print("⚠️ Benötigt Gras und Sattel zum Reiten!")
+	
+	# Q-Taste: Quad Toggle
+	if event.is_action_pressed("toggle_quad"):
+		if has_quad and not is_mounted:
+			_toggle_quad()
 
 func _fire_gun() -> void:
 	"""Feuert eine Kugel in die letzte Bewegungsrichtung."""
@@ -112,6 +135,66 @@ func _fire_gun() -> void:
 	if Constants.DEBUG_MODE:
 		print("🔫 Player fired gun in direction: %s" % last_direction)
 
+# ==================== Mount/Vehicle System (Phase 4) ====================
+
+func _can_mount() -> bool:
+	"""Prüft ob der Spieler Gras und Sattel hat."""
+	return has_item(Constants.ItemType.GRASS) and has_item(Constants.ItemType.SADDLE)
+
+func _mount_brontosaurus(bronto: CharacterBody2D) -> void:
+	"""Spieler steigt auf den Brontosaurus."""
+	if not bronto or is_mounted:
+		return
+	
+	is_mounted = true
+	current_mount = bronto
+	bronto.mount(self)
+	
+	# Verbrauche Gras (Sattel bleibt)
+	inventory[Constants.ItemType.GRASS] -= 1
+	emit_signal("item_collected", Constants.ItemType.GRASS, inventory[Constants.ItemType.GRASS])
+	
+	if Constants.DEBUG_MODE:
+		print("🦕 Mounted Brontosaurus! Gras verbraucht.")
+
+func _dismount_brontosaurus() -> void:
+	"""Spieler steigt vom Brontosaurus ab."""
+	if not current_mount:
+		return
+	
+	current_mount.dismount()
+	is_mounted = false
+	current_mount = null
+	
+	if Constants.DEBUG_MODE:
+		print("🦕 Dismounted Brontosaurus!")
+
+func _toggle_quad() -> void:
+	"""Quad-Modus an/aus schalten."""
+	is_on_quad = !is_on_quad
+	
+	if is_on_quad:
+		original_speed = speed
+		speed = Constants.QUAD_SPEED
+		if sprite:
+			sprite.texture = load(Constants.QUAD_SPRITE_PATH)
+		if Constants.DEBUG_MODE:
+			print("🏎️ Quad aktiviert! Speed: %d" % speed)
+	else:
+		speed = Constants.PLAYER_SPEED
+		if sprite:
+			sprite.texture = load(Constants.PLAYER_SPRITE_PATH)
+		if Constants.DEBUG_MODE:
+			print("🏎️ Quad deaktiviert! Speed: %d" % speed)
+
+func set_nearby_brontosaurus(bronto: CharacterBody2D) -> void:
+	"""Wird vom Brontosaurus aufgerufen wenn Player in Reichweite."""
+	nearby_brontosaurus = bronto
+
+func clear_nearby_brontosaurus() -> void:
+	"""Wird vom Brontosaurus aufgerufen wenn Player außer Reichweite."""
+	nearby_brontosaurus = null
+
 func _on_item_entered(area: Area2D) -> void:
 	"""Wird aufgerufen wenn ein Item die DetectionArea betritt."""
 	if area.is_in_group("items"):
@@ -127,6 +210,12 @@ func _on_item_entered(area: Area2D) -> void:
 				has_gun = true
 				if Constants.DEBUG_MODE:
 					print("🔫 Gun acquired! Press SPACE to shoot.")
+			
+			# Prüfe ob Quad gesammelt wurde
+			if item_type == Constants.ItemType.QUAD:
+				has_quad = true
+				if Constants.DEBUG_MODE:
+					print("🏎️ Quad acquired! Press Q to toggle.")
 			
 			# Item aus der Welt entfernen
 			area.queue_free()

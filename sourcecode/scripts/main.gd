@@ -7,6 +7,7 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var item_spawner = $ItemSpawner
 @onready var hud = $HUD
 @onready var t_rex = $TRex
+@onready var brontosaurus = $Brontosaurus
 
 func _ready() -> void:
 	# Verbinde Player-Signal mit HUD
@@ -20,11 +21,17 @@ func _ready() -> void:
 		t_rex.health_changed.connect(_on_trex_health_changed)
 		t_rex.enemy_died.connect(_on_trex_died)
 	
+	# Verbinde Brontosaurus Signale (Phase 4)
+	if brontosaurus and player:
+		brontosaurus.player_nearby.connect(_on_brontosaurus_player_nearby)
+		brontosaurus.player_left.connect(_on_brontosaurus_player_left)
+		brontosaurus.brontosaurus_died.connect(_on_brontosaurus_died)
+	
 	# Initial Inventar anzeigen
 	if hud and player:
 		hud.update_inventory(player.get_inventory())
 	
-	print("✓ Main scene initialized with T-Rex")
+	print("✓ Main scene initialized with T-Rex and Brontosaurus")
 	print("  Items spawned: %d" % item_spawner.get_spawned_item_count())
 
 
@@ -59,3 +66,21 @@ func _on_trex_health_changed(hp: int, max_hp: int) -> void:
 func _on_trex_died() -> void:
 	"""Wird aufgerufen wenn T-Rex stirbt."""
 	print("🦖 T-Rex eliminated!")
+
+# ==================== Brontosaurus Callbacks (Phase 4) ====================
+
+func _on_brontosaurus_player_nearby(bronto: CharacterBody2D) -> void:
+	"""Wird aufgerufen wenn Player in Brontosaurus-Reichweite kommt."""
+	if player:
+		player.set_nearby_brontosaurus(bronto)
+
+func _on_brontosaurus_player_left() -> void:
+	"""Wird aufgerufen wenn Player Brontosaurus-Reichweite verlässt."""
+	if player:
+		player.clear_nearby_brontosaurus()
+
+func _on_brontosaurus_died() -> void:
+	"""Wird aufgerufen wenn Brontosaurus stirbt."""
+	print("🦕 Brontosaurus died!")
+	if player:
+		player.clear_nearby_brontosaurus()

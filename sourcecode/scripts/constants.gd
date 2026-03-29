@@ -74,6 +74,21 @@ const BULLET_SPEED = 500.0
 const BULLET_DAMAGE = 10
 const GUN_COOLDOWN = 0.3  # Sekunden zwischen Schüssen
 
+# Brontosaurus Konstanten (Phase 4)
+const BRONTOSAURUS_SPRITE_PATH = "res://assets/Brontosaurus.png"
+const BRONTOSAURUS_HP = 150
+const BRONTOSAURUS_MAX_HP = 150
+const BRONTOSAURUS_SPEED = 120.0          # Wander-Speed
+const BRONTOSAURUS_MOUNT_SPEED = 180.0    # Reiten-Speed
+const BRONTOSAURUS_DAMAGE = 25            # Schaden gegen T-Rex
+const BRONTOSAURUS_DAMAGE_COOLDOWN = 1.5
+const BRONTOSAURUS_WANDER_RADIUS = 300.0  # Maximale Wanderdistanz
+const BRONTOSAURUS_WANDER_INTERVAL = 3.0  # Sekunden zwischen Wanderzielen
+
+# Quad Konstanten (Phase 4)
+const QUAD_SPRITE_PATH = "res://assets/Quad.png"
+const QUAD_SPEED = 400.0                  # Doppelte Player-Speed
+
 # HealthBar UI
 const HEALTHBAR_WIDTH = 60
 const HEALTHBAR_HEIGHT = 8

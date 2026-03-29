@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3 uid="uid://brontosaurus"]
+
+[ext_resource type="Texture2D" path="res://assets/Brontosaurus.png" id="1_bronto"]
+[ext_resource type="PackedScene" uid="uid://healthbar" path="res://scenes/enemies/HealthBar.tscn" id="2_healthbar"]
+[ext_resource type="Script" path="res://scripts/vehicles/brontosaurus.gd" id="3_script"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 80.0
+height = 200.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 150.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_damage"]
+radius = 90.0
+height = 180.0
+
+[node name="Brontosaurus" type="CharacterBody2D"]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("3_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_bronto")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_interaction")
+
+[node name="DamageArea" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea"]
+shape = SubResource("CapsuleShape2D_damage")
+
+[node name="HealthBar" parent="." instance=ExtResource("2_healthbar")]
