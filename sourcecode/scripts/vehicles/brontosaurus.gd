@@ -56,8 +56,8 @@ func _ready() -> void:
 	
 	# HealthBar initialisieren
 	if healthbar:
-		healthbar.update_health(hp, max_hp)
-		health_changed.connect(healthbar.update_health)
+		healthbar.max_value = max_hp
+		healthbar.value = hp
 	
 	if Constants.DEBUG_MODE:
 		print("✓ Brontosaurus spawned at %s" % global_position)
@@ -215,6 +215,7 @@ func _on_damage_area_body_entered(body: Node2D) -> void:
 func take_damage(amount: int) -> void:
 	"""Brontosaurus nimmt Schaden."""
 	hp -= amount
+	healthbar.value = hp
 	emit_signal("health_changed", hp, max_hp)
 	
 	if Constants.DEBUG_MODE:

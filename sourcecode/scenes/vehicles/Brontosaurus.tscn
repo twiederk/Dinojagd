@@ -1,8 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://brontosaurus"]
+[gd_scene format=3 uid="uid://brontosaurus"]
 
-[ext_resource type="Texture2D" path="res://assets/Brontosaurus.png" id="1_bronto"]
-[ext_resource type="PackedScene" uid="uid://healthbar" path="res://scenes/enemies/HealthBar.tscn" id="2_healthbar"]
-[ext_resource type="Script" path="res://scripts/vehicles/brontosaurus.gd" id="3_script"]
+[ext_resource type="Texture2D" uid="uid://3h1c411j6jy6" path="res://assets/Brontosaurus.png" id="1_bronto"]
+[ext_resource type="PackedScene" uid="uid://cx8sse2fc02r1" path="res://scenes/ui/HealthBar.tscn" id="3_bno71"]
+[ext_resource type="Script" uid="uid://ckna4ajkljefh" path="res://scripts/vehicles/brontosaurus.gd" id="3_script"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 80.0
@@ -15,34 +15,38 @@ radius = 150.0
 radius = 90.0
 height = 180.0
 
-[node name="Brontosaurus" type="CharacterBody2D"]
+[node name="Brontosaurus" type="CharacterBody2D" unique_id=268870662]
 collision_layer = 8
 collision_mask = 3
 script = ExtResource("3_script")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=569387361]
 scale = Vector2(2, 2)
 texture = ExtResource("1_bronto")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=18368504]
 shape = SubResource("CapsuleShape2D_body")
 
-[node name="InteractionArea" type="Area2D" parent="."]
+[node name="InteractionArea" type="Area2D" parent="." unique_id=177240047]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1814350955]
 shape = SubResource("CircleShape2D_interaction")
 
-[node name="DamageArea" type="Area2D" parent="."]
+[node name="DamageArea" type="Area2D" parent="." unique_id=2118750393]
 collision_layer = 8
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1582656608]
 shape = SubResource("CapsuleShape2D_damage")
 
-[node name="HealthBar" parent="." instance=ExtResource("2_healthbar")]
-
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(1.5, 1.5)
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1986373298]
 enabled = false
+zoom = Vector2(1.5, 1.5)
+
+[node name="HealthBar" parent="." unique_id=1656506452 instance=ExtResource("3_bno71")]
+offset_left = -37.0
+offset_top = 54.0
+offset_right = 29.0
+offset_bottom = 69.0
