@@ -16,7 +16,7 @@ radius = 90.0
 height = 180.0
 
 [node name="Brontosaurus" type="CharacterBody2D" unique_id=268870662]
-collision_layer = 8
+collision_layer = 2
 collision_mask = 3
 script = ExtResource("3_script")
 
@@ -35,7 +35,7 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_interaction")
 
 [node name="DamageArea" type="Area2D" parent="." unique_id=2118750393]
-collision_layer = 8
+collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1582656608]
