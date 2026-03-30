@@ -5,24 +5,24 @@
 [ext_resource type="Script" uid="uid://bhq7xviagjy4k" path="res://scripts/player.gd" id="PlayerScript"]
 
 [sub_resource type="CapsuleShape2D" id="PlayerCollision"]
-radius = 31.0
-height = 150.0
+radius = 8.0
+height = 34.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gfjak"]
-radius = 51.0
-height = 172.0
+radius = 17.0
+height = 54.0
 
 [node name="Player" type="CharacterBody2D" unique_id=212906186]
 collision_layer = 2
 script = ExtResource("PlayerScript")
 
 [node name="AnimatedSprite2D" type="Sprite2D" parent="." unique_id=334063367]
+position = Vector2(-1, 16)
 scale = Vector2(2, 2)
 texture = ExtResource("2_gfjak")
 offset = Vector2(0, -8)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1969833680]
-position = Vector2(-20, 14)
 shape = SubResource("PlayerCollision")
 debug_color = Color(0.9214912, 0.24244872, 0.36576533, 0.41960785)
 
@@ -30,14 +30,13 @@ debug_color = Color(0.9214912, 0.24244872, 0.36576533, 0.41960785)
 collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1194647066]
-position = Vector2(-21, 15)
 shape = SubResource("CapsuleShape2D_gfjak")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1020202834]
 zoom = Vector2(1.5, 1.5)
 
 [node name="HealthBar" parent="." unique_id=432356171 instance=ExtResource("3_4kuee")]
-offset_left = -54.0
-offset_top = 95.0
-offset_right = 12.0
-offset_bottom = 120.0
+offset_left = -17.0
+offset_top = 21.0
+offset_right = 16.0
+offset_bottom = 27.0

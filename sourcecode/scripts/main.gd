@@ -8,8 +8,13 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var hud = $HUD
 @onready var t_rex = $TRex
 @onready var brontosaurus = $Brontosaurus
+@onready var map_borders: MapBorders = $MapBorders
+@onready var erdboden_ebene: TileMapLayer = $ErdbodenEbene
 
 func _ready() -> void:
+	if not OS.has_feature("editor"):
+		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN	
+		
 	# Verbinde Player-Signal mit HUD
 	if player and hud:
 		player.item_collected.connect(_on_player_item_collected)
@@ -31,8 +36,22 @@ func _ready() -> void:
 	if hud and player:
 		hud.update_inventory(player.get_inventory())
 	
+	_setup_limits_and_borders()
+	
 	print("✓ Main scene initialized with T-Rex and Brontosaurus")
 	print("  Items spawned: %d" % item_spawner.get_spawned_item_count())
+
+
+func _setup_limits_and_borders() -> void:
+	var tile_map_used_rect = erdboden_ebene.get_used_rect()
+	var tile_size = erdboden_ebene.tile_set.tile_size
+	var north_limit = tile_map_used_rect.position.y * tile_size.y
+	var south_limit = (tile_map_used_rect.position.y + tile_map_used_rect.size.y) * tile_size.y
+	var west_limit = tile_map_used_rect.position.x * tile_size.x
+	var east_limit = (tile_map_used_rect.position.x + tile_map_used_rect.size.x) * tile_size.x
+	
+	map_borders.set_borders(north_limit, south_limit, west_limit, east_limit)
+	player.set_camera_limits(north_limit, south_limit, west_limit, east_limit)
 
 
 func _process(delta: float) -> void:
