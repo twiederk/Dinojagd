@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hud"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/version_widget.tscn" id="2_atyv1"]
+[ext_resource type="PackedScene" uid="uid://bpkpuwnv5gy7d" path="res://scenes/ui/version_widget.tscn" id="2_atyv1"]
 [ext_resource type="Script" uid="uid://bqjgfbqmnxclx" path="res://scripts/hud.gd" id="HUDScript"]
 
 [node name="HUD" type="CanvasLayer" unique_id=622911333]
