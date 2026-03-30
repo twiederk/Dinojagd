@@ -14,7 +14,7 @@ config/name="Dinojagd"
 config/version="1.2.0"
 run/main_scene="res://scenes/main/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/windows_native_icon="res://icon.ico"
 
 [autoload]
 
