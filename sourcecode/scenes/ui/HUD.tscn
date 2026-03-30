@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://hud"]
+[gd_scene format=3 uid="uid://hud"]
 
-[ext_resource type="Script" path="res://scripts/hud.gd" id="HUDScript"]
+[ext_resource type="PackedScene" path="res://scenes/ui/version_widget.tscn" id="2_atyv1"]
+[ext_resource type="Script" uid="uid://bqjgfbqmnxclx" path="res://scripts/hud.gd" id="HUDScript"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=622911333]
 layer = 10
 script = ExtResource("HUDScript")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=507057256]
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 410.0
@@ -14,19 +15,14 @@ offset_bottom = 100.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 393.0
-margin_bottom = 93.0
-separation = 8
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1593991228]
+layout_mode = 2
 
-[node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
-margin_right = 386.0
-margin_bottom = 22.0
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer" unique_id=1958183820]
+layout_mode = 2
 text = "📦 Inventar:"
 
-[node name="InventoryGrid" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
-margin_top = 30.0
-margin_right = 386.0
-margin_bottom = 86.0
+[node name="InventoryGrid" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=368619325]
+layout_mode = 2
+
+[node name="VersionWidget" parent="." unique_id=681356886 instance=ExtResource("2_atyv1")]
