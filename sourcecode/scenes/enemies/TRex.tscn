@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://trex"]
+
+[ext_resource type="Texture2D" uid="uid://bpbctuxwbgkfa" path="res://assets/T-Rex.png" id="2_jsvau"]
+[ext_resource type="PackedScene" uid="uid://cx8sse2fc02r1" path="res://scenes/ui/HealthBar.tscn" id="3_jsvau"]
+[ext_resource type="Script" uid="uid://eev6erdnu085" path="res://scripts/enemies/t_rex.gd" id="TRexScript"]
+
+[sub_resource type="CapsuleShape2D" id="TRexCollision"]
+radius = 111.0
+height = 222.0
+
+[sub_resource type="CircleShape2D" id="DetectionShape"]
+radius = 304.0411
+
+[sub_resource type="CircleShape2D" id="DamageShape"]
+radius = 145.05516
+
+[node name="TRex" type="CharacterBody2D" unique_id=301375274]
+collision_layer = 2
+script = ExtResource("TRexScript")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=382479882]
+scale = Vector2(2, 2)
+texture = ExtResource("2_jsvau")
+offset = Vector2(0, -8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1876920885]
+shape = SubResource("TRexCollision")
+debug_color = Color(0.8820708, 0.2983277, 0.41178253, 0.41960785)
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=287332922]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=361795557]
+shape = SubResource("DetectionShape")
+
+[node name="DamageArea" type="Area2D" parent="." unique_id=161450077]
+collision_layer = 2
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1526993828]
+shape = SubResource("DamageShape")
+
+[node name="HealthBar" parent="." unique_id=1656506452 instance=ExtResource("3_jsvau")]
+offset_left = -116.0
+offset_top = 66.0
+offset_right = 114.0
+offset_bottom = 81.0

@@ -1,0 +1,86 @@
+Wir haben die Grafik Spieler.png der soll herumlaufen können. Wir haben auch die Grafik Gwer.png für ein Gewehr. Dieses soll in der Spielwelt herumliegen und durch den Spieler aufgesammelt werden können. Wenn der Spieler das Gewehr aufgesammelt hat, dann kann er damit angreifen. Der Spieler muss immer auf der Hut sein, weil ein T-Rex (T-Rex.png) auf Jagd nach Beute ist. Der T-Rex kann den Spieler durch Berührung verletzten und sogar töten. Der Spieler kann mit dem Gewehr auf den T-Rex schiessen und ihn verletzten und Töten. Der grüne Streifen in der Grafik gibt an wie viele Lebenspunkte der Spieler bzw. der T-Rex hat. Der rote Streifen gibt an wie viel Schaden der Spieler bzw. der T-Rex macht. Die Grafik Gras.png befindet sich auch in der Spielwelt. Der Spieler kann sie aufsammmeln. Der Sattel (Sattel.png) liegt auch in der Spielwelt herum. Der Spieler kann den Sattel aufsammeln. Wenn der Spieler Gras und Sattel aufgesammelt hat, kann er auf dem Brontosaurus (Brontosaurus.png) reiten. Der Brontosaurus läuft auch in der Gegend herum. Der Brontosaurus kann auch dem T-Rex Schaden zufügen. Es gibt noch ein Quad (Quad.png). Es befindet sich auch in der Spielwelt und der Spieler kann auch dieses aufsammeln. Wenn er das Quad aufsammelt kann er damit schnell fahren.
+
+
+Was enthalten ist (aktuelle Feature-Map)
+Spieler Spieler.png: Bewegung + Grundkampf
+Gewehr Gwer.png: Aufheben → schießen aktivieren
+T-Rex T-Rex.png: verfolgt, trifft Spieler, ist sterblich
+Lebens- und Schadensbalken (grün/rot) für Spieler + T-Rex
+Gras Gras.png + Sattel Sattel.png: aufheben
+Brontosaurus Brontosaurus.png: erweckbar durch Gras+Sattel, kann T-Rex schädigen
+Quad Quad.png: einsammeln → Turbo-Modus / schnelle Bewegung
+Szenenstruktur: Main.tscn, Player.tscn, Enemy.tscn, Pickup.tscn, Bronto.tscn, Quad.tscn
+Status: ready, playing, game_over
+
+
+Plan: Dinojagd mit Godot erstellen
+TL;DR - Wir erstellen ein 2D-Action-Adventure-Spiel mit Sammeln, Kämpfen, Reiten und Fahren. Spieler sammelt Items (Gewehr, Gras, Sattel, Quad), kämpft gegen T-Rex, reitet Brontosaurus, überlebt in einer offenen Welt. Schritt-für-Schritt mit Vater + Sohn, nutzt alle PNG-Assets aus assets.
+
+Steps
+
+Status prüfen
+Frisches Projekt ohne Szenen/Skripte.
+Klären: Godot-Version (3.x/4.x), Plattform (PC/Mobile), Priorität (Kampf vs. Sammeln).
+Projektsetup
+Hauptszene: Main.tscn (Node2D Root).
+Unterknoten: Player (CharacterBody2D), T-Rex (CharacterBody2D), Brontosaurus (CharacterBody2D), ItemSpawner (Node2D + Timer), HUD (CanvasLayer mit HealthBars).
+Player-Grundlage
+Sprite: Spieler.png, CollisionShape2D, Script: Bewegung (WASD), Schießen (Space), Inventar (Array für Items).
+Sammeln: Area2D-Overlap mit Items -> ins Inventar, entfernen.
+Angriff: Mit Gewehr -> Bullet spawnen (Area2D mit Damage).
+Mount: Gras + Sattel -> Brontosaurus reiten (Player als Child, Bewegung übernehmen).
+Vehicle: Quad -> Player als Child, höhere Speed.
+Gegner: T-Rex
+Sprite: T-Rex.png, CharacterBody2D, Script: KI (Player jagen, wenn in Reichweite), HealthBar (grün), Damage (rot).
+Kollision mit Player: Schaden zufügen, Player stirbt bei 0 HP.
+Kollision mit Bullet: Schaden nehmen, sterben bei 0 HP.
+NPCs: Brontosaurus
+Sprite: Brontosaurus.png, CharacterBody2D, Script: zufällige Bewegung, kann T-Rex schaden (Kollision).
+Mount: Player kann aufsteigen (wenn Gras + Sattel im Inventar), dann steuern.
+Items
+Gwer.png (Gewehr): Sammeln -> Angriff freischalten.
+Gras.png (Gras): Sammeln -> für Mount benötigt.
+Sattel.png (Sattel): Sammeln -> für Mount benötigt.
+Quad.png (Quad): Sammeln -> Fahrzeug freischalten.
+Spawner: Zufällig platzieren, Timer für Respawn.
+UI & Zustand
+HUD: HealthBars (Player + T-Rex), Inventar-Anzeige (Icons).
+Spielzustand: playing, game_over (Player tot), Restart (R).
+Kamera: folgt Player.
+Feinschliff
+Animation: AnimatedSprite2D für Laufen, Springen, Angriff.
+Sound: Sammeln, Schießen, Treffer, Tod.
+Level: Offene Welt mit Gras/Boden, evtl. Endlos-Modus mit zunehmender T-Rex-Anzahl.
+Test & Iteration
+Mit Sohn spielen, Feedback: Ist Kampf zu schwer? Mehr Items? Neue Mechaniken (z.B. Verstecke).
+Relevant files
+
+project.godot
+assets/*.png
+Neue Dateien:
+scenes/Main.tscn und scripts/main.gd
+scenes/Player.tscn und scripts/player.gd
+scenes/T-Rex.tscn und scripts/t_rex.gd
+scenes/Brontosaurus.tscn und scripts/brontosaurus.gd
+scenes/Item.tscn und scripts/item.gd
+scenes/Bullet.tscn und scripts/bullet.gd
+scenes/HUD.tscn und scripts/hud.gd
+Verification
+
+F5 startet, Player bewegt sich (WASD), springt (Space).
+Items spawnen, sammeln funktioniert, Inventar zeigt Icons.
+Gewehr freischaltet Angriff (z.B. Maus links), Bullet fliegt, trifft T-Rex.
+T-Rex jagt Player, Kollision verletzt, HealthBar sinkt.
+Gras + Sattel -> Brontosaurus reiten, Quad fahren.
+Game Over bei 0 HP, Restart funktioniert.
+Decisions
+
+Fokus auf Action-Adventure statt Runner: Sammeln, Kämpfen, Mounts.
+PC-Steuerung: WASD bewegen, Space schießen, E aufsammeln.
+Modular: Erst Player + Items + T-Rex, dann Brontosaurus + Quad.
+HealthBars: Grün = HP, Rot = Damage (z.B. als Tooltip oder separate Bar).
+Further Considerations
+
+Aktuelle Spielidee: Spieler + Gewehr + T-Rex + Gras + Sattel + Brontosaurus + Quad (Inventarables, Mount, Vehicle).
+Mechanik: Sammeln erhöht Fähigkeiten, Kämpfen & Überleben, Gegner-KI, Lebens-/Schadensleisten, Plattform/Endlossystem.
+Nächster Schritt: ich liefere euch sofort die vollständige Architektur, Scripts und das erste Beispiel-Gameplay für diese komplexeren Regeln.
