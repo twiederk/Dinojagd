@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://main"]
 
 [ext_resource type="TileSet" uid="uid://bq5ffi6bigmxy" path="res://assets/IslandTileset.tres" id="2_sjxhf"]
+[ext_resource type="PackedScene" uid="uid://cxg2srcb55bc8" path="res://map_borders.tscn" id="8_ko0rf"]
 [ext_resource type="PackedScene" uid="uid://brontosaurus" path="res://scenes/vehicles/Brontosaurus.tscn" id="BrontosaurusScene"]
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/ui/HUD.tscn" id="HUDScene"]
 [ext_resource type="Script" uid="uid://bxoyy8xxw61fo" path="res://scripts/item_spawner.gd" id="ItemSpawnerScript"]
@@ -38,3 +39,5 @@ position = Vector2(360, 192)
 position = Vector2(-300, 200)
 
 [node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]
+
+[node name="MapBorders" parent="." unique_id=1491260825 instance=ExtResource("8_ko0rf")]

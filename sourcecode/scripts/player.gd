@@ -272,3 +272,10 @@ func has_item(item_type: int) -> bool:
 func get_item_count(item_type: int) -> int:
 	"""Gibt die Anzahl eines bestimmten Items zurück."""
 	return inventory.get(item_type, 0)
+
+
+func set_camera_limits(north_limit: float, south_limit: float, west_limit: float, east_limit: float) -> void:
+	camera.set_limit(SIDE_LEFT, int(west_limit))
+	camera.set_limit(SIDE_RIGHT, int(east_limit))
+	camera.set_limit(SIDE_TOP, int(north_limit))
+	camera.set_limit(SIDE_BOTTOM, int(south_limit))
