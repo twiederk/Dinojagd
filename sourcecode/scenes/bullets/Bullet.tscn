@@ -1,24 +1,24 @@
-[gd_scene load_steps=3 format=3 uid="uid://by4kqj8l5xnrf"]
+[gd_scene format=3 uid="uid://by4kqj8l5xnrf"]
 
-[ext_resource type="Script" path="res://scripts/bullet.gd" id="1_bullet"]
+[ext_resource type="Script" uid="uid://b4n0ycejobpmg" path="res://scripts/bullet.gd" id="1_bullet"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_collision"]
 radius = 5.0
 
-[node name="Bullet" type="Area2D"]
+[node name="Bullet" type="Area2D" unique_id=1554400060]
+z_index = 1
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_bullet")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=502455642]
 offset_left = -5.0
 offset_top = -2.0
 offset_right = 5.0
 offset_bottom = 2.0
 color = Color(1, 0.8, 0, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1610827325]
 shape = SubResource("CircleShape2D_collision")
 
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
-rect = Rect2(-10, -10, 20, 20)
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=752007267]
