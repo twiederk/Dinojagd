@@ -10,7 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://trex" path="res://scenes/enemies/TRex.tscn" id="TRexScene"]
 
 [node name="Main" type="Node2D" unique_id=100323129]
-position = Vector2(1, 0)
 script = ExtResource("MainScript")
 
 [node name="ErdbodenEbene" type="TileMapLayer" parent="." unique_id=1641488514]

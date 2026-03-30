@@ -17,28 +17,24 @@ normal = Vector2(-1, 0)
 script = ExtResource("1_l3yer")
 
 [node name="NorthBorder" type="StaticBody2D" parent="." unique_id=847656563]
-collision_layer = 2
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NorthBorder" unique_id=1660142989]
 shape = SubResource("WorldBoundaryShape2D_utvxw")
 
 [node name="SouthBorder" type="StaticBody2D" parent="." unique_id=1206881540]
-collision_layer = 2
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SouthBorder" unique_id=1208171383]
 shape = SubResource("WorldBoundaryShape2D_5yvla")
 
 [node name="WestBorder" type="StaticBody2D" parent="." unique_id=928016872]
-collision_layer = 2
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WestBorder" unique_id=56814405]
 shape = SubResource("WorldBoundaryShape2D_hpfoq")
 
 [node name="EastBorder" type="StaticBody2D" parent="." unique_id=1066594331]
-collision_layer = 2
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EastBorder" unique_id=1585654060]
