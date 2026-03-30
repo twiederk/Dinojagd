@@ -10,6 +10,9 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var brontosaurus = $Brontosaurus
 
 func _ready() -> void:
+	if not OS.has_feature("editor"):
+		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN	
+		
 	# Verbinde Player-Signal mit HUD
 	if player and hud:
 		player.item_collected.connect(_on_player_item_collected)
