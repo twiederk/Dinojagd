@@ -1,3 +1,4 @@
+class_name TRex
 extends CharacterBody2D
 
 var Constants = preload("res://scripts/constants.gd")

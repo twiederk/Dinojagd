@@ -1,3 +1,4 @@
+class_name Brontosaurus
 extends CharacterBody2D
 
 var Constants = preload("res://scripts/constants.gd")
