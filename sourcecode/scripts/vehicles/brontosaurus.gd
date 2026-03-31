@@ -52,8 +52,8 @@ func _ready() -> void:
 	
 	# Signals verbinden
 	if interaction_area:
-		interaction_area.area_entered.connect(_on_interaction_area_entered)
-		interaction_area.area_exited.connect(_on_interaction_area_exited)
+		interaction_area.body_entered.connect(_on_interaction_area_entered)
+		interaction_area.body_exited.connect(_on_interaction_area_exited)
 	
 	if damage_area:
 		damage_area.body_entered.connect(_on_damage_area_body_entered)
@@ -64,7 +64,7 @@ func _ready() -> void:
 		healthbar.value = hp
 	
 	if Constants.DEBUG_MODE:
-		print("✓ Brontosaurus spawned at %s" % global_position)
+		print("✓ Brontosaurus erschienen bei %s" % global_position)
 
 func _physics_process(delta: float) -> void:
 	# Update Cooldowns
@@ -92,7 +92,7 @@ func _input(event: InputEvent) -> void:
 			rider.current_mount = null
 			dismount()
 			if Constants.DEBUG_MODE:
-				print("🦕 Dismount via E-Taste")
+				print("🦕 Abgang über E-Taste")
 
 func _wander_movement(delta: float) -> void:
 	"""Zufälliges Wandern wenn nicht gemounted."""
@@ -158,7 +158,7 @@ func mount(player: CharacterBody2D) -> void:
 		camera.make_current()
 	
 	if Constants.DEBUG_MODE:
-		print("🦕 Player mounted Brontosaurus!")
+		print("🦕 Spieler ist auf dem Brontosaurus!")
 
 func dismount() -> Vector2:
 	"""Player steigt ab. Gibt die Absteige-Position zurück."""
@@ -184,22 +184,20 @@ func dismount() -> Vector2:
 	wander_timer = 0.0  # Sofort neues Wanderziel
 	
 	if Constants.DEBUG_MODE:
-		print("🦕 Player dismounted Brontosaurus at %s" % dismount_pos)
+		print("🦕 Spieler ist vom Brontosaurus abgestiegen bei %s" % dismount_pos)
 	
 	return dismount_pos
 
-func _on_interaction_area_entered(area: Area2D) -> void:
+func _on_interaction_area_entered(body: Node2D) -> void:
 	"""Player kommt in Interaktions-Reichweite."""
-	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
-	if is_player and current_state != State.MOUNTED:
+	if body.is_in_group("player") and current_state != State.MOUNTED:
 		emit_signal("player_nearby", self)
 		if Constants.DEBUG_MODE:
-			print("🦕 Player nearby - Press E to mount (requires Grass + Saddle)")
+			print("🦕 Spieler in Reichweite - E zum Reiten drücken (benötigt Gras + Sattel)")
 
-func _on_interaction_area_exited(area: Area2D) -> void:
+func _on_interaction_area_exited(body: Node2D) -> void:
 	"""Player verlässt Interaktions-Reichweite."""
-	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
-	if is_player:
+	if body.is_in_group("player"):
 		emit_signal("player_left")
 
 func _on_damage_area_body_entered(body: Node2D) -> void:
@@ -214,7 +212,7 @@ func _on_damage_area_body_entered(body: Node2D) -> void:
 			damage_cooldown = Constants.BRONTOSAURUS_DAMAGE_COOLDOWN
 			
 			if Constants.DEBUG_MODE:
-				print("🦕 Brontosaurus dealt %d damage to %s!" % [damage, body.name])
+				print("🦕 Brontosaurus verursachte %d Schaden an %s!" % [damage, body.name])
 
 func take_damage(amount: int) -> void:
 	"""Brontosaurus nimmt Schaden."""
@@ -223,7 +221,7 @@ func take_damage(amount: int) -> void:
 	emit_signal("health_changed", hp, max_hp)
 	
 	if Constants.DEBUG_MODE:
-		print("🦕 Brontosaurus takes %d damage! HP: %d/%d" % [amount, hp, max_hp])
+		print("🦕 Brontosaurus nimmt %d Schaden! HP: %d/%d" % [amount, hp, max_hp])
 	
 	if hp <= 0:
 		_die()
@@ -237,7 +235,7 @@ func _die() -> void:
 	emit_signal("brontosaurus_died")
 	
 	if Constants.DEBUG_MODE:
-		print("💀 Brontosaurus died!")
+		print("💀 Brontosaurus gestorben!")
 	
 	queue_free()
 
