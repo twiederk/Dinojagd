@@ -50,8 +50,3 @@ func update_inventory(inventory: Dictionary) -> void:
 			var count = inventory.get(item_type, 0)
 			var item_name = Constants.ITEM_DATA[item_type]["display_name"]
 			inventory_labels[item_type].text = "%s: %d" % [item_name, count]
-
-func update_game_status(status: String) -> void:
-	"""Aktualisiert die Spielstatus-Anzeige (optional)."""
-	# Kann später für Game Over, Score, etc. verwendet werden
-	pass
