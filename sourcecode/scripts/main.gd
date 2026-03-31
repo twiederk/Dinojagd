@@ -37,9 +37,6 @@ func _ready() -> void:
 		hud.update_inventory(player.get_inventory())
 	
 	_setup_limits_and_borders()
-	
-	print("✓ Main scene initialized with T-Rex and Brontosaurus")
-	print("  Items spawned: %d" % item_spawner.get_spawned_item_count())
 
 
 func _setup_limits_and_borders() -> void:
@@ -52,6 +49,7 @@ func _setup_limits_and_borders() -> void:
 	
 	map_borders.set_borders(north_limit, south_limit, west_limit, east_limit)
 	player.set_camera_limits(north_limit, south_limit, west_limit, east_limit)
+	brontosaurus.set_camera_limits(north_limit, south_limit, west_limit, east_limit)
 
 
 func _process(delta: float) -> void:
