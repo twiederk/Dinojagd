@@ -66,6 +66,7 @@ toggle_quad={
 
 2d_physics/layer_1="World"
 2d_physics/layer_2="Creature"
+2d_physics/layer_3="Item"
 
 [physics]
 
