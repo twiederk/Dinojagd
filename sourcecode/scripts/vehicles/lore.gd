@@ -14,6 +14,8 @@ var rider: CharacterBody2D = null
 var start_position: Vector2 = Vector2.ZERO
 var current_direction: Vector2 = Vector2.ZERO
 var tile_map: TileMapLayer = null
+var last_curve_tile: Vector2i = Vector2i(-999, -999)  # Letzte verarbeitete Kurve
+var last_debug_tile: Vector2i = Vector2i(-999, -999)  # Für Debug-Ausgabe
 
 # References
 @onready var sprite = $Sprite2D
@@ -109,18 +111,58 @@ func _handle_direction_input() -> void:
 
 func _move_on_rails(speed: float) -> void:
 	"""Bewegt die Lore entlang der Schienen."""
-	velocity = current_direction * speed
+	if not tile_map:
+		velocity = Vector2.ZERO
+		return
 	
-	# Prüfe ob wir uns noch auf Schienen befinden
-	var next_pos = global_position + current_direction * speed * get_physics_process_delta_time()
-	
-	# Wenn wir uns zu einer neuen Tile bewegen, prüfe die Richtung
+	# Aktuelles Tile prüfen
 	var current_tile = _get_tile_at_position(global_position)
-	var next_tile = _get_tile_at_position(next_pos)
+	var current_tile_data = tile_map.get_cell_atlas_coords(current_tile)
 	
-	if current_tile != next_tile:
-		# Wir haben eine neue Tile erreicht
-		_handle_tile_transition(next_tile)
+	# Debug: Zeige Tile-Info nur bei neuer Tile
+	if Constants.DEBUG_MODE and current_tile != last_debug_tile:
+		print("🚃 Tile: %s, Atlas: %s, IsRail: %s, IsCurve: %s, Dir: %s" % [current_tile, current_tile_data, _is_rail_tile(current_tile_data), _is_curve_tile(current_tile_data), current_direction])
+		last_debug_tile = current_tile
+	
+	# Prüfe ob wir AKTUELL auf einer gültigen Schiene sind
+	if not _is_rail_tile(current_tile_data):
+		# Wir sind auf keiner Schiene mehr - Ende erreicht
+		if Constants.DEBUG_MODE:
+			print("🚃 Keine Schiene unter der Lore! Atlas: %s" % current_tile_data)
+		_end_of_rails()
+		return
+	
+	# WICHTIG: Kurven-Behandlung ZUERST, bevor das nächste Tile geprüft wird!
+	if _is_curve_tile(current_tile_data) and current_tile != last_curve_tile:
+		# Kurve gefunden, die noch nicht verarbeitet wurde
+		var old_direction = current_direction
+		_handle_curve(current_tile_data, current_tile)
+		last_curve_tile = current_tile
+		
+		if old_direction != current_direction:
+			# Richtung hat sich geändert - Sprite aktualisieren
+			_update_sprite_direction()
+			if Constants.DEBUG_MODE:
+				print("🚃 Kurve verarbeitet! Neue Richtung: %s" % current_direction)
+	
+	# JETZT prüfen wir das nächste Tile in der (möglicherweise neuen) Richtung
+	var next_frame_pos = global_position + current_direction * speed * get_physics_process_delta_time()
+	var next_tile = _get_tile_at_position(next_frame_pos)
+	
+	# Nur prüfen wenn wir tatsächlich zu einer neuen Tile wechseln würden
+	if next_tile != current_tile:
+		var next_tile_data = tile_map.get_cell_atlas_coords(next_tile)
+		
+		# Prüfe ob das nächste Tile eine gültige Schiene ist
+		if not _is_rail_tile(next_tile_data):
+			# Nächstes Tile ist keine Schiene - Ende erreicht
+			if Constants.DEBUG_MODE:
+				print("🚃 Nächstes Tile (%s) ist keine Schiene! Atlas: %s" % [next_tile, next_tile_data])
+			_end_of_rails()
+			return
+	
+	# Bewegung fortsetzen
+	velocity = current_direction * speed
 
 
 func _handle_tile_transition(next_tile: Vector2i) -> void:
@@ -146,34 +188,34 @@ func _handle_tile_transition(next_tile: Vector2i) -> void:
 func _handle_curve(tile_data: Vector2i, tile_pos: Vector2i) -> void:
 	"""Behandelt Kurven und ändert die Fahrtrichtung."""
 	# Kurven-Mapping basierend auf Atlas-Koordinaten:
-	# (19,0) = Kurve oben-links (kommt von rechts → geht nach unten, oder von unten → geht nach rechts)
-	# (21,0) = Kurve oben-rechts (kommt von links → geht nach unten, oder von unten → geht nach links)
-	# (19,2) = Kurve unten-links (kommt von rechts → geht nach oben, oder von oben → geht nach rechts)
-	# (21,2) = Kurve unten-rechts (kommt von links → geht nach oben, oder von oben → geht nach links)
+	# (19,0) = Kurve von unten nach rechts (verbindet Süden mit Osten)
+	# (21,0) = Kurve von links nach unten (verbindet Westen mit Süden)
+	# (19,2) = Kurve von oben nach rechts (verbindet Norden mit Osten)
+	# (21,2) = Kurve von links nach oben (verbindet Westen mit Norden)
 	
 	var new_direction = current_direction
 	
 	match tile_data:
-		Vector2i(19, 0):  # Kurve oben-links
-			if current_direction == Vector2.RIGHT:
-				new_direction = Vector2.DOWN
-			elif current_direction == Vector2.UP:
-				new_direction = Vector2.LEFT
-		Vector2i(21, 0):  # Kurve oben-rechts
-			if current_direction == Vector2.LEFT:
-				new_direction = Vector2.DOWN
-			elif current_direction == Vector2.UP:
+		Vector2i(19, 0):  # Kurve von unten nach rechts
+			if current_direction == Vector2.UP:  # Kommt von unten
 				new_direction = Vector2.RIGHT
-		Vector2i(19, 2):  # Kurve unten-links
-			if current_direction == Vector2.RIGHT:
-				new_direction = Vector2.UP
-			elif current_direction == Vector2.DOWN:
+			elif current_direction == Vector2.LEFT:  # Kommt von rechts
+				new_direction = Vector2.DOWN
+		Vector2i(21, 0):  # Kurve von links nach unten
+			if current_direction == Vector2.RIGHT:  # Kommt von links
+				new_direction = Vector2.DOWN
+			elif current_direction == Vector2.UP:  # Kommt von unten
 				new_direction = Vector2.LEFT
-		Vector2i(21, 2):  # Kurve unten-rechts
-			if current_direction == Vector2.LEFT:
-				new_direction = Vector2.UP
-			elif current_direction == Vector2.DOWN:
+		Vector2i(19, 2):  # Kurve von oben nach rechts
+			if current_direction == Vector2.DOWN:  # Kommt von oben
 				new_direction = Vector2.RIGHT
+			elif current_direction == Vector2.LEFT:  # Kommt von rechts
+				new_direction = Vector2.UP
+		Vector2i(21, 2):  # Kurve von links nach oben
+			if current_direction == Vector2.RIGHT:  # Kommt von links
+				new_direction = Vector2.UP
+			elif current_direction == Vector2.DOWN:  # Kommt von oben
+				new_direction = Vector2.LEFT
 	
 	if new_direction != current_direction:
 		current_direction = new_direction
@@ -184,6 +226,8 @@ func _handle_curve(tile_data: Vector2i, tile_pos: Vector2i) -> void:
 func _end_of_rails() -> void:
 	"""Ende der Schienen erreicht - Spieler steigt aus."""
 	velocity = Vector2.ZERO
+	last_curve_tile = Vector2i(-999, -999)  # Reset für Rückfahrt
+	last_debug_tile = Vector2i(-999, -999)  # Reset Debug
 	
 	if rider:
 		if Constants.DEBUG_MODE:
@@ -309,6 +353,8 @@ func mount(player: CharacterBody2D) -> void:
 	"""Spieler steigt in die Lore ein."""
 	rider = player
 	current_state = State.WAITING_FOR_DIRECTION
+	last_curve_tile = Vector2i(-999, -999)  # Reset für neue Fahrt
+	last_debug_tile = Vector2i(-999, -999)  # Reset Debug
 	
 	# Player unsichtbar machen und Physik deaktivieren
 	player.visible = false
