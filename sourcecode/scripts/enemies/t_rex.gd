@@ -22,6 +22,7 @@ var start_position: Vector2 = Vector2.ZERO
 
 
 var damage_cooldown: float = 0.0
+var entities_in_damage_area: Array = []  # Speichert Player/Brontosaurus im damage_area
 
 signal health_changed(hp: int, max_hp: int)
 signal enemy_died
@@ -43,6 +44,7 @@ func _ready() -> void:
 	
 	if damage_area:
 		damage_area.body_entered.connect(_on_damage_area_entered)
+		damage_area.body_exited.connect(_on_damage_area_exited)
 		damage_area.area_entered.connect(_on_bullet_hit)
 	
 	if healthbar:
@@ -56,6 +58,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if damage_cooldown > 0:
 		damage_cooldown -= delta
+	
+	# Kontinuierlicher Schaden an Entities im damage_area
+	_apply_continuous_damage()
 	
 	_update_ai_movement()
 	
@@ -100,9 +105,13 @@ func _on_detection_exited(body: Node2D) -> void:
 
 func _on_damage_area_entered(body: Node2D) -> void:
 	# Prüfe ob Brontosaurus berührt wird (wenn Spieler drauf sitzt)
-	if body.is_in_group("vehicles") and body.has_method("is_mounted") and body.is_mounted() and damage_cooldown <= 0:
-		# Schaden auf Brontosaurus zufügen wenn Spieler drauf sitzt
-		if body.has_method("take_damage"):
+	if body.is_in_group("vehicles") and body.has_method("is_mounted") and body.is_mounted():
+		# Zur Tracking-Liste hinzufügen
+		if not entities_in_damage_area.has(body):
+			entities_in_damage_area.append(body)
+		
+		# Sofort Schaden zufügen wenn Cooldown bereit
+		if damage_cooldown <= 0 and body.has_method("take_damage"):
 			body.take_damage(damage)
 			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
 			
@@ -111,14 +120,63 @@ func _on_damage_area_entered(body: Node2D) -> void:
 		return
 	
 	# Prüfe ob Player berührt
-	if body.is_in_group("player") and damage_cooldown <= 0:
-		# Schaden auf Player zufügen
-		if body.has_method("take_damage"):
+	if body.is_in_group("player"):
+		# Zur Tracking-Liste hinzufügen
+		if not entities_in_damage_area.has(body):
+			entities_in_damage_area.append(body)
+		
+		# Sofort Schaden zufügen wenn Cooldown bereit
+		if damage_cooldown <= 0 and body.has_method("take_damage"):
 			body.take_damage(damage)
 			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
 			
 			if Constants.DEBUG_MODE:
 				print("  → T-Rex verursachte %d Schaden am Spieler!" % damage)
+
+
+func _on_damage_area_exited(body: Node2D) -> void:
+	# Entity aus der Tracking-Liste entfernen
+	if entities_in_damage_area.has(body):
+		entities_in_damage_area.erase(body)
+		
+		if Constants.DEBUG_MODE:
+			if body.is_in_group("player"):
+				print("  → Spieler hat damage_area verlassen")
+			elif body.is_in_group("vehicles"):
+				print("  → Brontosaurus hat damage_area verlassen")
+
+
+func _apply_continuous_damage() -> void:
+	# Nur Schaden zufügen wenn Cooldown bereit und Entities vorhanden
+	if damage_cooldown > 0 or entities_in_damage_area.is_empty():
+		return
+	
+	# Kopie der Liste für sichere Iteration
+	var entities_to_damage = entities_in_damage_area.duplicate()
+	
+	for entity in entities_to_damage:
+		if not is_instance_valid(entity):
+			entities_in_damage_area.erase(entity)
+			continue
+		
+		# Brontosaurus: Nur Schaden wenn beritten
+		if entity.is_in_group("vehicles"):
+			if entity.has_method("is_mounted") and entity.is_mounted() and entity.has_method("take_damage"):
+				entity.take_damage(damage)
+				damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+				
+				if Constants.DEBUG_MODE:
+					print("  → T-Rex verursachte %d kontinuierlichen Schaden am Brontosaurus!" % damage)
+				return  # Ein Schaden pro Cooldown-Zyklus
+		
+		# Player
+		if entity.is_in_group("player") and entity.has_method("take_damage"):
+			entity.take_damage(damage)
+			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+			
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex verursachte %d kontinuierlichen Schaden am Spieler!" % damage)
+			return  # Ein Schaden pro Cooldown-Zyklus
 
 
 func _on_bullet_hit(area: Area2D) -> void:
