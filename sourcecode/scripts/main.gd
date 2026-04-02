@@ -7,7 +7,6 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var hud = $HUD
 @onready var t_rex = $TRex
 @onready var brontosaurus = $Brontosaurus
-@onready var lore = $Lore
 @onready var map_borders: MapBorders = $MapBorders
 @onready var erdboden_ebene: TileMapLayer = $ErdbodenEbene
 
@@ -30,9 +29,8 @@ func _ready() -> void:
 		brontosaurus.player_left.connect(_on_brontosaurus_player_left)
 		brontosaurus.brontosaurus_died.connect(_on_brontosaurus_died)
 	
-	if lore and player:
-		lore.player_nearby.connect(_on_lore_player_nearby)
-		lore.player_left.connect(_on_lore_player_left)
+	# Alle Loren finden und Signals verbinden
+	_connect_all_lores()
 	
 	if hud and player:
 		hud.update_inventory(player.get_inventory())
@@ -51,11 +49,15 @@ func _setup_limits_and_borders() -> void:
 	map_borders.set_borders(north_limit, south_limit, west_limit, east_limit)
 	player.set_camera_limits(north_limit, south_limit, west_limit, east_limit)
 	brontosaurus.set_camera_limits(north_limit, south_limit, west_limit, east_limit)
-	if lore and lore.has_node("Camera2D"):
-		lore.get_node("Camera2D").set_limit(SIDE_LEFT, int(west_limit))
-		lore.get_node("Camera2D").set_limit(SIDE_RIGHT, int(east_limit))
-		lore.get_node("Camera2D").set_limit(SIDE_TOP, int(north_limit))
-		lore.get_node("Camera2D").set_limit(SIDE_BOTTOM, int(south_limit))
+	
+	# Kamera-Limits für alle Loren setzen
+	for lore_node in get_tree().get_nodes_in_group("lore"):
+		if lore_node.has_node("Camera2D"):
+			var cam = lore_node.get_node("Camera2D")
+			cam.set_limit(SIDE_LEFT, int(west_limit))
+			cam.set_limit(SIDE_RIGHT, int(east_limit))
+			cam.set_limit(SIDE_TOP, int(north_limit))
+			cam.set_limit(SIDE_BOTTOM, int(south_limit))
 
 
 func _on_player_item_collected(item_type: int, count: int) -> void:
@@ -96,6 +98,16 @@ func _on_brontosaurus_died() -> void:
 	print("🦕 Brontosaurus died!")
 	if player:
 		player.clear_nearby_brontosaurus()
+
+
+func _connect_all_lores() -> void:
+	"""Verbindet Signals aller Loren in der Szene."""
+	for lore_node in get_tree().get_nodes_in_group("lore"):
+		if player:
+			lore_node.player_nearby.connect(_on_lore_player_nearby)
+			lore_node.player_left.connect(_on_lore_player_left)
+			if Constants.DEBUG_MODE:
+				print("✓ Lore verbunden: %s" % lore_node.name)
 
 
 func _on_lore_player_nearby(lore_ref: CharacterBody2D) -> void:
