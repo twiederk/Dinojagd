@@ -16,7 +16,10 @@ var chase_speed: float = Constants.T_REX_CHASE_SPEED
 @onready var healthbar = $HealthBar
 
 
-var target_player: CharacterBody2D = null
+var chase_target: CharacterBody2D = null  # Aktuelles Ziel (Player oder Brontosaurus)
+var player_ref: CharacterBody2D = null  # Referenz zum Player
+var brontosaurus_in_detection: CharacterBody2D = null  # Brontosaurus im detection_area
+var player_in_detection: bool = false  # Ist der Player im detection_area?
 var ai_mode: String = "PATROL"  # PATROL, CHASE, IDLE, RETURN
 var start_position: Vector2 = Vector2.ZERO
 
@@ -36,7 +39,7 @@ func _ready() -> void:
 	if sprite:
 		sprite.texture = load(Constants.T_REX_SPRITE_PATH)
 	
-	target_player = get_tree().root.find_child("Player", true, false)
+	player_ref = get_tree().root.find_child("Player", true, false)
 	
 	if detection_area:
 		detection_area.body_entered.connect(_on_detection_entered)
@@ -62,14 +65,49 @@ func _physics_process(delta: float) -> void:
 	# Kontinuierlicher Schaden an Entities im damage_area
 	_apply_continuous_damage()
 	
+	# Chase-Target aktualisieren (Player auf Brontosaurus?)
+	_update_chase_target()
+	
 	_update_ai_movement()
 	
 	move_and_slide()
 
 	
+func _update_chase_target() -> void:
+	"""Bestimmt das aktuelle Verfolgungsziel basierend auf Mount-Status."""
+	if ai_mode != "CHASE":
+		return
+	
+	# Prüfe ob Player auf Brontosaurus sitzt
+	if player_ref and player_ref.is_mounted and player_ref.current_mount:
+		var mount = player_ref.current_mount
+		# Wenn Brontosaurus im detection_area ist, verfolge ihn
+		if brontosaurus_in_detection == mount or _is_body_in_detection_area(mount):
+			if chase_target != mount:
+				chase_target = mount
+				if Constants.DEBUG_MODE:
+					print("  → T-Rex wechselt Ziel zu Brontosaurus (Spieler reitet)!")
+			return
+	
+	# Ansonsten verfolge den Player (wenn im detection_area)
+	if player_in_detection and player_ref:
+		if chase_target != player_ref:
+			chase_target = player_ref
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex wechselt Ziel zurück zum Spieler!")
+
+
+func _is_body_in_detection_area(body: Node2D) -> bool:
+	"""Prüft ob ein Body aktuell im detection_area ist."""
+	if not detection_area:
+		return false
+	var overlapping = detection_area.get_overlapping_bodies()
+	return body in overlapping
+
+
 func _update_ai_movement() -> void:
-	if ai_mode == "CHASE" and target_player:
-		var direction = (target_player.global_position - global_position).normalized()
+	if ai_mode == "CHASE" and chase_target:
+		var direction = (chase_target.global_position - global_position).normalized()
 		velocity = direction * chase_speed
 	elif ai_mode == "RETURN":
 		# Zurück zur Startposition
@@ -88,19 +126,62 @@ func _update_ai_movement() -> void:
 
 
 func _on_detection_entered(body: Node2D) -> void:
-	var is_player = body.is_in_group("player")
-	if is_player:
-		ai_mode = "CHASE"
-		if Constants.DEBUG_MODE:
-			print("  → T-Rex hat Spieler erkannt! Jagdmodus aktiviert")
+	# Player betritt detection_area
+	if body.is_in_group("player"):
+		player_in_detection = true
+		# Nur verfolgen wenn Player NICHT auf Brontosaurus sitzt
+		if not body.is_mounted:
+			chase_target = body
+			ai_mode = "CHASE"
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex hat Spieler erkannt! Jagdmodus aktiviert")
+		return
+	
+	# Brontosaurus betritt detection_area
+	if body.is_in_group("vehicles") and body.has_method("is_mounted"):
+		brontosaurus_in_detection = body
+		# Nur verfolgen wenn Player drauf sitzt
+		if body.is_mounted():
+			chase_target = body
+			ai_mode = "CHASE"
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex hat berittenen Brontosaurus erkannt! Jagdmodus aktiviert")
 
 
 func _on_detection_exited(body: Node2D) -> void:
-	var is_player = body.is_in_group("player")
-	if is_player:
-		ai_mode = "RETURN"
-		if Constants.DEBUG_MODE:
-			print("  → Spieler verloren! Kehre zur Startposition zurück: %s" % start_position)
+	# Player verlässt detection_area
+	if body.is_in_group("player"):
+		player_in_detection = false
+		# Nur RETURN wenn Player das aktuelle Ziel war
+		if chase_target == body:
+			# Prüfe ob Brontosaurus noch da ist und beritten wird
+			if brontosaurus_in_detection and brontosaurus_in_detection.has_method("is_mounted") and brontosaurus_in_detection.is_mounted():
+				chase_target = brontosaurus_in_detection
+				if Constants.DEBUG_MODE:
+					print("  → Spieler verloren, verfolge Brontosaurus weiter!")
+			else:
+				ai_mode = "RETURN"
+				chase_target = null
+				if Constants.DEBUG_MODE:
+					print("  → Spieler verloren! Kehre zur Startposition zurück: %s" % start_position)
+		return
+	
+	# Brontosaurus verlässt detection_area
+	if body.is_in_group("vehicles"):
+		if brontosaurus_in_detection == body:
+			brontosaurus_in_detection = null
+		# Nur RETURN wenn Brontosaurus das aktuelle Ziel war
+		if chase_target == body:
+			# Prüfe ob Player noch da ist (und nicht mounted)
+			if player_in_detection and player_ref and not player_ref.is_mounted:
+				chase_target = player_ref
+				if Constants.DEBUG_MODE:
+					print("  → Brontosaurus verloren, verfolge Spieler weiter!")
+			else:
+				ai_mode = "RETURN"
+				chase_target = null
+				if Constants.DEBUG_MODE:
+					print("  → Brontosaurus verloren! Kehre zur Startposition zurück: %s" % start_position)
 
 
 func _on_damage_area_entered(body: Node2D) -> void:
