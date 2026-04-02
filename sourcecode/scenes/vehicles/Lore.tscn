@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://lore"]
+
+[ext_resource type="Texture2D" uid="uid://lore_h" path="res://assets/Lore_horizontal.png" id="1_lore"]
+[ext_resource type="Script" uid="uid://lore_script" path="res://scripts/vehicles/lore.gd" id="2_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(64, 32)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 80.0
+
+[node name="Lore" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_lore")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+debug_color = Color(0.6, 0.4, 0.2, 0.42)
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_interaction")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
+zoom = Vector2(2, 2)

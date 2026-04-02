@@ -89,6 +89,17 @@ const BRONTOSAURUS_WANDER_INTERVAL = 3.0  # Sekunden zwischen Wanderzielen
 const QUAD_SPRITE_PATH = "res://assets/Quad.png"
 const QUAD_SPEED = 400.0                  # Doppelte Player-Speed
 
+# Lore Konstanten
+const LORE_SPRITE_HORIZONTAL = "res://assets/Lore_horizontal.png"
+const LORE_SPRITE_VERTICAL = "res://assets/Lore_vertical.png"
+const LORE_SPEED = 150.0
+const LORE_RETURN_SPEED = 200.0  # Schneller zurückfahren
+
+# Schienen Tile Atlas-Koordinaten (x, y)
+const RAIL_TILES_HORIZONTAL = [Vector2i(20, 0), Vector2i(20, 2)]
+const RAIL_TILES_VERTICAL = [Vector2i(19, 1), Vector2i(21, 1)]
+const RAIL_TILES_CURVES = [Vector2i(19, 0), Vector2i(21, 0), Vector2i(19, 2), Vector2i(21, 2)]
+
 # HealthBar UI
 const HEALTHBAR_WIDTH = 60
 const HEALTHBAR_HEIGHT = 8

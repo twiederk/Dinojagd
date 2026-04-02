@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://c6bds5wqv3y6h" path="res://scripts/main.gd" id="MainScript"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/player/Player.tscn" id="PlayerScene"]
 [ext_resource type="PackedScene" uid="uid://trex" path="res://scenes/enemies/TRex.tscn" id="TRexScene"]
+[ext_resource type="PackedScene" uid="uid://lore" path="res://scenes/vehicles/Lore.tscn" id="LoreScene"]
 
 [node name="Main" type="Node2D" unique_id=100323129]
 script = ExtResource("MainScript")
@@ -36,6 +37,9 @@ position = Vector2(360, 192)
 
 [node name="Brontosaurus" parent="." unique_id=1090467744 instance=ExtResource("BrontosaurusScene")]
 position = Vector2(-300, 200)
+
+[node name="Lore" parent="." instance=ExtResource("LoreScene")]
+position = Vector2(-400, -200)
 
 [node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]
 
