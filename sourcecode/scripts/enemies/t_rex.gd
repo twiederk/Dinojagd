@@ -1,75 +1,73 @@
+class_name TRex
 extends CharacterBody2D
 
 var Constants = preload("res://scripts/constants.gd")
 
-# Stats
 var hp: int = Constants.T_REX_HP
 var max_hp: int = Constants.T_REX_MAX_HP
 var damage: int = Constants.T_REX_DAMAGE
 var speed: float = Constants.T_REX_SPEED
 var chase_speed: float = Constants.T_REX_CHASE_SPEED
 
-# References
+
 @onready var sprite = $Sprite2D
 @onready var detection_area = $DetectionArea
 @onready var damage_area = $DamageArea
 @onready var healthbar = $HealthBar
 
-# AI State
+
 var target_player: CharacterBody2D = null
 var ai_mode: String = "PATROL"  # PATROL, CHASE, IDLE, RETURN
 var start_position: Vector2 = Vector2.ZERO
 
-# Cooldowns
-var damage_cooldown: float = 0.0
 
-# Signals
+var damage_cooldown: float = 0.0
+var entities_in_damage_area: Array = []  # Speichert Player/Brontosaurus im damage_area
+
 signal health_changed(hp: int, max_hp: int)
 signal enemy_died
 
+
 func _ready() -> void:
-	# Zur "enemies" Gruppe hinzufügen (für Brontosaurus Damage)
 	add_to_group("enemies")
 	
-	# Startposition speichern
 	start_position = global_position
 	
-	# Sprite laden
 	if sprite:
 		sprite.texture = load(Constants.T_REX_SPRITE_PATH)
 	
-	# Player finden
 	target_player = get_tree().root.find_child("Player", true, false)
 	
-	# Signals verbinden
 	if detection_area:
-		detection_area.area_entered.connect(_on_detection_entered)
-		detection_area.area_exited.connect(_on_detection_exited)
+		detection_area.body_entered.connect(_on_detection_entered)
+		detection_area.body_exited.connect(_on_detection_exited)
 	
 	if damage_area:
-		damage_area.area_entered.connect(_on_damage_area_entered)
+		damage_area.body_entered.connect(_on_damage_area_entered)
+		damage_area.body_exited.connect(_on_damage_area_exited)
+		damage_area.area_entered.connect(_on_bullet_hit)
 	
-	# HealthBar initialisieren
 	if healthbar:
 		healthbar.max_value = max_hp
 		healthbar.value = hp
 	
 	if Constants.DEBUG_MODE:
-		print("✓ T-Rex spawned at %s" % global_position)
+		print("✓ T-Rex erschienen bei %s" % global_position)
+
 
 func _physics_process(delta: float) -> void:
-	# Update Cooldowns
 	if damage_cooldown > 0:
 		damage_cooldown -= delta
 	
-	# Update AI Movement
+	# Kontinuierlicher Schaden an Entities im damage_area
+	_apply_continuous_damage()
+	
 	_update_ai_movement()
 	
-	# Apply movement
 	move_and_slide()
+
 	
 func _update_ai_movement() -> void:
-	"""Update die Bewegung basierend auf AI-Mode."""
 	if ai_mode == "CHASE" and target_player:
 		var direction = (target_player.global_position - global_position).normalized()
 		velocity = direction * chase_speed
@@ -88,25 +86,100 @@ func _update_ai_movement() -> void:
 	else:
 		velocity = Vector2.ZERO
 
-func _on_detection_entered(area: Area2D) -> void:
-	"""Wird aufgerufen wenn det Player endet die DetectionArea betritt."""
-	print("Player detected in T-Rex detection area!")
-	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
+
+func _on_detection_entered(body: Node2D) -> void:
+	var is_player = body.is_in_group("player")
 	if is_player:
 		ai_mode = "CHASE"
 		if Constants.DEBUG_MODE:
-			print("  → T-Rex detected Player! Chase mode activated")
+			print("  → T-Rex hat Spieler erkannt! Jagdmodus aktiviert")
 
-func _on_detection_exited(area: Area2D) -> void:
-	"""Wird aufgerufen wenn der Player die DetectionArea verlässt."""
-	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
+
+func _on_detection_exited(body: Node2D) -> void:
+	var is_player = body.is_in_group("player")
 	if is_player:
 		ai_mode = "RETURN"
 		if Constants.DEBUG_MODE:
-			print("  → Player lost! Returning to start position: %s" % start_position)
+			print("  → Spieler verloren! Kehre zur Startposition zurück: %s" % start_position)
 
-func _on_damage_area_entered(area: Area2D) -> void:
-	"""Wird aufgerufen wenn Player oder Bullet die DamageArea berührt."""
+
+func _on_damage_area_entered(body: Node2D) -> void:
+	# Prüfe ob Brontosaurus berührt wird (wenn Spieler drauf sitzt)
+	if body.is_in_group("vehicles") and body.has_method("is_mounted") and body.is_mounted():
+		# Zur Tracking-Liste hinzufügen
+		if not entities_in_damage_area.has(body):
+			entities_in_damage_area.append(body)
+		
+		# Sofort Schaden zufügen wenn Cooldown bereit
+		if damage_cooldown <= 0 and body.has_method("take_damage"):
+			body.take_damage(damage)
+			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+			
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex verursachte %d Schaden am Brontosaurus!" % damage)
+		return
+	
+	# Prüfe ob Player berührt
+	if body.is_in_group("player"):
+		# Zur Tracking-Liste hinzufügen
+		if not entities_in_damage_area.has(body):
+			entities_in_damage_area.append(body)
+		
+		# Sofort Schaden zufügen wenn Cooldown bereit
+		if damage_cooldown <= 0 and body.has_method("take_damage"):
+			body.take_damage(damage)
+			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+			
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex verursachte %d Schaden am Spieler!" % damage)
+
+
+func _on_damage_area_exited(body: Node2D) -> void:
+	# Entity aus der Tracking-Liste entfernen
+	if entities_in_damage_area.has(body):
+		entities_in_damage_area.erase(body)
+		
+		if Constants.DEBUG_MODE:
+			if body.is_in_group("player"):
+				print("  → Spieler hat damage_area verlassen")
+			elif body.is_in_group("vehicles"):
+				print("  → Brontosaurus hat damage_area verlassen")
+
+
+func _apply_continuous_damage() -> void:
+	# Nur Schaden zufügen wenn Cooldown bereit und Entities vorhanden
+	if damage_cooldown > 0 or entities_in_damage_area.is_empty():
+		return
+	
+	# Kopie der Liste für sichere Iteration
+	var entities_to_damage = entities_in_damage_area.duplicate()
+	
+	for entity in entities_to_damage:
+		if not is_instance_valid(entity):
+			entities_in_damage_area.erase(entity)
+			continue
+		
+		# Brontosaurus: Nur Schaden wenn beritten
+		if entity.is_in_group("vehicles"):
+			if entity.has_method("is_mounted") and entity.is_mounted() and entity.has_method("take_damage"):
+				entity.take_damage(damage)
+				damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+				
+				if Constants.DEBUG_MODE:
+					print("  → T-Rex verursachte %d kontinuierlichen Schaden am Brontosaurus!" % damage)
+				return  # Ein Schaden pro Cooldown-Zyklus
+		
+		# Player
+		if entity.is_in_group("player") and entity.has_method("take_damage"):
+			entity.take_damage(damage)
+			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
+			
+			if Constants.DEBUG_MODE:
+				print("  → T-Rex verursachte %d kontinuierlichen Schaden am Spieler!" % damage)
+			return  # Ein Schaden pro Cooldown-Zyklus
+
+
+func _on_bullet_hit(area: Area2D) -> void:
 	# Prüfe ob Bullet getroffen hat
 	if area.is_in_group("bullets"):
 		if area.has_method("damage"):
@@ -115,55 +188,25 @@ func _on_damage_area_entered(area: Area2D) -> void:
 			take_damage(Constants.BULLET_DAMAGE)
 		area.queue_free()
 		if Constants.DEBUG_MODE:
-			print("  → T-Rex hit by bullet!")
-		return
-	
-	# Prüfe ob Brontosaurus berührt wird (wenn Spieler drauf sitzt)
-	var parent = area.get_parent()
-	if parent and parent.is_in_group("vehicles") and parent.has_method("is_mounted") and parent.is_mounted() and damage_cooldown <= 0:
-		# Schaden auf Brontosaurus zufügen wenn Spieler drauf sitzt
-		if parent.has_method("take_damage"):
-			parent.take_damage(damage)
-			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
-			
-			if Constants.DEBUG_MODE:
-				print("  → T-Rex dealt %d damage to Brontosaurus!" % damage)
-		return
-	
-	# Prüfe ob Player berührt
-	print("Player detected in T-Rex DAMAGE area!")
-	var is_player = area.is_in_group("player") or (area.get_parent() and area.get_parent().is_in_group("player"))
-	if is_player and damage_cooldown <= 0:
-		# Schaden auf Player zufügen
-		if area.get_parent().has_method("take_damage"):
-			area.get_parent().take_damage(damage)
-			damage_cooldown = Constants.T_REX_DAMAGE_COOLDOWN
-			
-			if Constants.DEBUG_MODE:
-				print("  → T-Rex dealt %d damage to Player!" % damage)
+			print("  → T-Rex wurde von Kugel getroffen!")
+
 
 func take_damage(amount: int) -> void:
-	"""T-Rex nimmt Schaden."""
 	hp -= amount
 	healthbar.value = hp
 	emit_signal("health_changed", hp, max_hp)
 	
 	if Constants.DEBUG_MODE:
-		print("🦖 T-Rex takes %d damage! HP: %d/%d" % [amount, hp, max_hp])
+		print("🦖 T-Rex erhält %d Schaden! HP: %d/%d" % [amount, hp, max_hp])
 	
-	# Wenn HP <= 0, sterben
 	if hp <= 0:
 		_die()
 
+
 func _die() -> void:
-	"""T-Rex stirbt."""
 	emit_signal("enemy_died")
 	
 	if Constants.DEBUG_MODE:
-		print("💀 T-Rex died!")
+		print("💀 T-Rex ist gestorben!")
 	
 	queue_free()
-
-func set_target(target_pos: Vector2) -> void:
-	"""Setze manuelles Ziel (für Patrol)."""
-	pass

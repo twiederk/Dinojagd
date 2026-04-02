@@ -16,6 +16,7 @@ radius = 145.05516
 
 [node name="TRex" type="CharacterBody2D" unique_id=301375274]
 collision_layer = 2
+collision_mask = 3
 script = ExtResource("TRexScript")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=382479882]
@@ -35,8 +36,8 @@ collision_mask = 2
 shape = SubResource("DetectionShape")
 
 [node name="DamageArea" type="Area2D" parent="." unique_id=161450077]
-collision_layer = 2
-collision_mask = 6
+collision_layer = 0
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=1526993828]
 shape = SubResource("DamageShape")

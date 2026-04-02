@@ -82,7 +82,6 @@ func _check_and_respawn_items() -> void:
 		return
 	
 	for item_type in Constants.ItemType.values():
-		var count = spawned_items[item_type].size()
 		
 		# Entferne Items die zu weit weg sind
 		for i in range(spawned_items[item_type].size() - 1, -1, -1):

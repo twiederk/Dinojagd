@@ -26,6 +26,7 @@ texture = ExtResource("1_bronto")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=18368504]
 shape = SubResource("CapsuleShape2D_body")
+debug_color = Color(0.86144435, 0.35237056, 0.21513477, 0.41960785)
 
 [node name="InteractionArea" type="Area2D" parent="." unique_id=177240047]
 collision_layer = 0
@@ -46,7 +47,7 @@ enabled = false
 zoom = Vector2(1.5, 1.5)
 
 [node name="HealthBar" parent="." unique_id=1656506452 instance=ExtResource("3_bno71")]
-offset_left = -37.0
+offset_left = -33.0
 offset_top = 54.0
-offset_right = 29.0
+offset_right = 33.0
 offset_bottom = 69.0

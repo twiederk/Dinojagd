@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="Dinojagd"
-config/version="1.1.0"
+config/version="1.2.0"
 run/main_scene="res://scenes/main/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/windows_native_icon="res://icon.ico"
 
 [autoload]
 
@@ -65,7 +65,8 @@ toggle_quad={
 [layer_names]
 
 2d_physics/layer_1="World"
-2d_physics/layer_2="Player"
+2d_physics/layer_2="Creature"
+2d_physics/layer_3="Item"
 
 [physics]
 
