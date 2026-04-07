@@ -144,6 +144,8 @@ func _move_on_rails(speed: float) -> void:
 		if old_direction != current_direction:
 			# Richtung hat sich geändert - Sprite aktualisieren
 			_update_sprite_direction()
+			# Lore zur Mittitte der Tile snappen nach Richtungswechsel
+			_snap_to_tile_center(current_tile)
 			print("🚃 Kurve verarbeitet! Neue Richtung: %s" % current_direction)
 	
 	# JETZT prüfen wir das nächste Tile in der (möglicherweise neuen) Richtung
@@ -303,6 +305,22 @@ func _is_curve_tile(atlas_coords: Vector2i) -> bool:
 
 func _is_horizontal_direction() -> bool:
 	return current_direction == Vector2.LEFT or current_direction == Vector2.RIGHT
+
+
+func _snap_to_tile_center(tile_coords: Vector2i) -> void:
+	if not tile_map:
+		return
+	
+	# Mittitte der Tile berechnen
+	var tile_center = tile_map.map_to_local(tile_coords)
+	
+	# Nur senkrecht zur Fahrtrichtung ausrichten
+	if _is_horizontal_direction():
+		# Horizontal fahren: nur Y-Koordinate korrigieren
+		global_position.y = tile_center.y
+	else:
+		# Vertikal fahren: nur X-Koordinate korrigieren
+		global_position.x = tile_center.x
 
 
 func _update_sprite_direction() -> void:
