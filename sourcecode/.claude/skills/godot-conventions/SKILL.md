@@ -20,6 +20,8 @@
 
 ## 🏗️ Class Structure Pattern
 
+**Every GDScript file MUST start with `class_name`.**
+
 Always follow this structure for Dinojagd scripts:
 
 ```gdscript
@@ -49,30 +51,38 @@ var hp: int = Constants.PLAYER_HP
 signal health_changed(hp: int, max_hp: int)
 signal died
 
+
 # 7. Lifecycle Methods
 func _ready() -> void:
 	add_to_group("players")
-	
+
+
 func _process(delta: float) -> void:
 	pass
-	
+
+
 func _physics_process(delta: float) -> void:
 	velocity = move_and_slide(velocity)
+
 
 # 8. Input Handling
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		pass
 
+
 # 9. Custom Methods (public)
 func take_damage(amount: int) -> void:
 	hp -= amount
 	health_changed.emit(hp, max_hp)
 
+
 # 10. Signal Handlers (_on_*)
 func _on_detection_entered(body: Node2D) -> void:
 	pass
 ```
+
+**Important**: Always maintain **two blank lines** between function definitions for readability.
 
 ---
 
@@ -90,8 +100,10 @@ var Constants = preload("res://scripts/constants.gd")
 
 # 3. Type hints for all variables & returns
 var speed: float = Constants.PLAYER_SPEED
+
 func take_damage(amount: int) -> void:
 	pass
+
 
 # 4. Use constants for magic numbers
 var hp: int = Constants.PLAYER_HP  # NOT: var hp: int = 100
@@ -100,18 +112,23 @@ var hp: int = Constants.PLAYER_HP  # NOT: var hp: int = 100
 func _ready() -> void:
 	detection_area.body_entered.connect(_on_body_entered)
 
+
 # 6. Use _process() for input, _physics_process() for movement
 func _process(delta: float) -> void:
 	handle_input()  # Polling
-	
+
+
 func _physics_process(delta: float) -> void:
 	velocity = move_and_slide(velocity)
 
+
 # 7. Emit signals for state changes
 signal health_changed(hp: int, max_hp: int)
+
 func take_damage(amount: int) -> void:
 	hp -= amount
 	health_changed.emit(hp, max_hp)
+
 
 # 8. Use groups for entity management
 add_to_group("enemies")
@@ -146,6 +163,61 @@ func _process(delta: float) -> void:
 # This works but is not discoverable:
 func some_function():
 	detection_area.body_entered.connect(_on_body_entered)
+
+# 7. Don't add function documentation using triple quotes
+# This is NOT used in Dinojagd:
+func take_damage(amount: int) -> void:
+	"""Deals damage to the entity."""  # ❌ DON'T DO THIS
+	hp -= amount
+```
+
+---
+
+## 📐 Formatting & Code Style
+
+### Line Spacing
+- **Two blank lines** must separate function definitions
+- No double blank lines within function bodies
+
+```gdscript
+func _ready() -> void:
+	add_to_group("players")
+
+
+func _process(delta: float) -> void:  # ✅ Two blank lines above
+	handle_input()
+
+
+func _physics_process(delta: float) -> void:  # ✅ Two blank lines above
+	velocity = move_and_slide(velocity)
+```
+
+### Comment Documentation
+- **DO NOT** use triple-quote docstrings (`"""..."""`) for functions
+- Use inline comments for clarity instead
+- Godot's documentation is maintained via code review, not code docs
+
+```gdscript
+# ❌ DON'T: Docstrings
+func take_damage(amount: int) -> void:
+	"""Damages the entity and updates health."""
+	hp -= amount
+
+# ✅ DO: Inline comments
+func take_damage(amount: int) -> void:
+	hp -= amount  # Reduce health
+	health_changed.emit(hp, max_hp)  # Notify listeners
+```
+
+### File Header
+Every GDScript file must start with `class_name`:
+
+```gdscript
+class_name Player  # ✅ ALWAYS first, no comments before it
+extends CharacterBody2D
+
+var Constants = preload("res://scripts/constants.gd")
+# ... rest of file
 ```
 
 ---
