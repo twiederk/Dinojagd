@@ -1,0 +1,13 @@
+{
+  "$schema": "https://claude.ai/.claude/schema/settings.json",
+  "project": {
+    "name": "Dinojagd",
+    "description": "2D Action-Adventure Godot 4.6 Game - Local User Settings",
+    "version": "1.3.0"
+  },
+  "userPreferences": {
+    "verbosity": "balanced",
+    "codeExplanations": true,
+    "refactoringSuggestions": true
+  }
+}

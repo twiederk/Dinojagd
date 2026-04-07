@@ -89,6 +89,8 @@ const BRONTOSAURUS_WANDER_INTERVAL = 3.0  # Sekunden zwischen Wanderzielen
 const QUAD_SPRITE_PATH = "res://assets/Quad.png"
 const QUAD_SPEED = 400.0                  # Doppelte Player-Speed
 
+
+
 # HealthBar UI
 const HEALTHBAR_WIDTH = 60
 const HEALTHBAR_HEIGHT = 8

@@ -29,6 +29,11 @@ var has_quad: bool = false
 var nearby_brontosaurus: CharacterBody2D = null
 var original_speed: float = 0.0
 
+# Lore System
+var is_in_lore: bool = false
+var current_lore: CharacterBody2D = null
+var nearby_lore: CharacterBody2D = null
+
 
 @onready var sprite = $AnimatedSprite2D
 @onready var detection_area = $DetectionArea
@@ -97,6 +102,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		if is_mounted:
 			_dismount_brontosaurus()
+		elif is_in_lore:
+			# Manuell aussteigen (normalerweise automatisch am Ende)
+			_exit_lore()
+		elif nearby_lore and not is_on_quad and not is_mounted:
+			_enter_lore(nearby_lore)
 		elif nearby_brontosaurus and _can_mount() and not is_on_quad:
 			_mount_brontosaurus(nearby_brontosaurus)
 		elif nearby_brontosaurus and not _can_mount():
@@ -177,6 +187,40 @@ func set_nearby_brontosaurus(bronto: CharacterBody2D) -> void:
 
 func clear_nearby_brontosaurus() -> void:
 	nearby_brontosaurus = null
+
+
+# === Lore System ===
+
+func _enter_lore(lore: CharacterBody2D) -> void:
+	if not lore or is_in_lore:
+		return
+	
+	is_in_lore = true
+	current_lore = lore
+	lore.mount(self)
+	
+	if Constants.DEBUG_MODE:
+		print("🚃 Entered Lore!")
+
+
+func _exit_lore() -> void:
+	if not current_lore:
+		return
+	
+	current_lore.dismount()
+	is_in_lore = false
+	current_lore = null
+	
+	if Constants.DEBUG_MODE:
+		print("🚃 Exited Lore!")
+
+
+func set_nearby_lore(lore: CharacterBody2D) -> void:
+	nearby_lore = lore
+
+
+func clear_nearby_lore() -> void:
+	nearby_lore = null
 
 
 func _on_item_entered(area: Area2D) -> void:
