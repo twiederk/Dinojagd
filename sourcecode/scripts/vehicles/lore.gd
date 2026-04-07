@@ -11,10 +11,9 @@ const RAIL_TILES_CURVES = [Vector2i(19, 0), Vector2i(21, 0), Vector2i(19, 2), Ve
 const LORE_SPRITE_HORIZONTAL = "res://assets/Lore_horizontal.png"
 const LORE_SPRITE_VERTICAL = "res://assets/Lore_vertical.png"
 const LORE_SPEED = 150.0
-const LORE_RETURN_SPEED = 200.0  # Schneller zurückfahren
 
 # States
-enum State { IDLE, WAITING_FOR_DIRECTION, MOVING, RETURNING }
+enum State { IDLE, WAITING_FOR_DIRECTION, MOVING }
 var current_state: State = State.IDLE
 
 # Rider
@@ -79,10 +78,8 @@ func _physics_process(_delta: float) -> void:
 			_handle_direction_input()
 		State.MOVING:
 			_move_on_rails(LORE_SPEED)
-		State.RETURNING:
-			_return_to_start()
 	
-	if current_state in [State.MOVING, State.RETURNING]:
+	if current_state == State.MOVING:
 		move_and_slide()
 		
 		# Rider Position aktualisieren
@@ -231,34 +228,7 @@ func _end_of_rails() -> void:
 		print("🚃 Ende der Schienen erreicht! Spieler steigt aus.")
 		dismount()
 	
-	# Lore fährt zurück zum Start
-	current_state = State.RETURNING
-	print("🚃 Lore fährt zurück zum Startpunkt...")
-
-
-func _return_to_start() -> void:
-	var distance = global_position.distance_to(start_position)
-	
-	if distance < 5.0:
-		# Am Start angekommen
-		global_position = start_position
-		current_state = State.IDLE
-		velocity = Vector2.ZERO
-		_update_sprite_for_current_tile()
-		print("🚃 Lore ist zurück am Start!")
-		return
-	
-	# Richtung zum Start berechnen und auf Schienen fahren
-	var dir_to_start = (start_position - global_position).normalized()
-	
-	# Bestimme die Hauptrichtung (horizontal oder vertikal)
-	if abs(dir_to_start.x) > abs(dir_to_start.y):
-		current_direction = Vector2.RIGHT if dir_to_start.x > 0 else Vector2.LEFT
-	else:
-		current_direction = Vector2.DOWN if dir_to_start.y > 0 else Vector2.UP
-	
-	_update_sprite_direction()
-	_move_on_rails(LORE_RETURN_SPEED)
+	current_state = State.IDLE
 
 
 func _can_move_in_direction(direction: Vector2) -> bool:
