@@ -3,6 +3,17 @@ extends CharacterBody2D
 
 var Constants = preload("res://scripts/constants.gd")
 
+# Schienen Tile Atlas-Koordinaten (x, y)
+const RAIL_TILES_HORIZONTAL = [Vector2i(20, 0), Vector2i(20, 2)]
+const RAIL_TILES_VERTICAL = [Vector2i(19, 1), Vector2i(21, 1)]
+const RAIL_TILES_CURVES = [Vector2i(19, 0), Vector2i(21, 0), Vector2i(19, 2), Vector2i(21, 2)]
+
+# Lore Konstanten
+const LORE_SPRITE_HORIZONTAL = "res://assets/Lore_horizontal.png"
+const LORE_SPRITE_VERTICAL = "res://assets/Lore_vertical.png"
+const LORE_SPEED = 150.0
+const LORE_RETURN_SPEED = 200.0  # Schneller zurückfahren
+
 # States
 enum State { IDLE, WAITING_FOR_DIRECTION, MOVING, RETURNING }
 var current_state: State = State.IDLE
@@ -36,7 +47,7 @@ func _ready() -> void:
 	
 	# Sprite laden (Standard: horizontal)
 	if sprite:
-		sprite.texture = load(Constants.LORE_SPRITE_HORIZONTAL)
+		sprite.texture = load(LORE_SPRITE_HORIZONTAL)
 	
 	# Signals verbinden
 	if interaction_area:
@@ -72,7 +83,7 @@ func _physics_process(delta: float) -> void:
 		State.WAITING_FOR_DIRECTION:
 			_handle_direction_input()
 		State.MOVING:
-			_move_on_rails(Constants.LORE_SPEED)
+			_move_on_rails(LORE_SPEED)
 		State.RETURNING:
 			_return_to_start()
 	
@@ -264,7 +275,7 @@ func _return_to_start() -> void:
 		current_direction = Vector2.DOWN if dir_to_start.y > 0 else Vector2.UP
 	
 	_update_sprite_direction()
-	_move_on_rails(Constants.LORE_RETURN_SPEED)
+	_move_on_rails(LORE_RETURN_SPEED)
 
 
 func _can_move_in_direction(direction: Vector2) -> bool:
@@ -292,13 +303,13 @@ func _is_rail_tile(atlas_coords: Vector2i) -> bool:
 		return false
 	
 	# Alle Schienen-Tiles prüfen
-	for tile in Constants.RAIL_TILES_HORIZONTAL:
+	for tile in RAIL_TILES_HORIZONTAL:
 		if atlas_coords == tile:
 			return true
-	for tile in Constants.RAIL_TILES_VERTICAL:
+	for tile in RAIL_TILES_VERTICAL:
 		if atlas_coords == tile:
 			return true
-	for tile in Constants.RAIL_TILES_CURVES:
+	for tile in RAIL_TILES_CURVES:
 		if atlas_coords == tile:
 			return true
 	
@@ -307,7 +318,7 @@ func _is_rail_tile(atlas_coords: Vector2i) -> bool:
 
 func _is_curve_tile(atlas_coords: Vector2i) -> bool:
 	"""Prüft ob die Atlas-Koordinaten eine Kurven-Tile sind."""
-	for tile in Constants.RAIL_TILES_CURVES:
+	for tile in RAIL_TILES_CURVES:
 		if atlas_coords == tile:
 			return true
 	return false
@@ -324,9 +335,9 @@ func _update_sprite_direction() -> void:
 		return
 	
 	if _is_horizontal_direction():
-		sprite.texture = load(Constants.LORE_SPRITE_HORIZONTAL)
+		sprite.texture = load(LORE_SPRITE_HORIZONTAL)
 	else:
-		sprite.texture = load(Constants.LORE_SPRITE_VERTICAL)
+		sprite.texture = load(LORE_SPRITE_VERTICAL)
 
 
 func _update_sprite_for_current_tile() -> void:
@@ -338,13 +349,13 @@ func _update_sprite_for_current_tile() -> void:
 	var atlas_coords = tile_map.get_cell_atlas_coords(tile_coords)
 	
 	# Horizontal tiles
-	for tile in Constants.RAIL_TILES_HORIZONTAL:
+	for tile in RAIL_TILES_HORIZONTAL:
 		if atlas_coords == tile:
-			sprite.texture = load(Constants.LORE_SPRITE_HORIZONTAL)
+			sprite.texture = load(LORE_SPRITE_HORIZONTAL)
 			return
 	
 	# Vertikal tiles oder Kurven → standard vertikal
-	sprite.texture = load(Constants.LORE_SPRITE_VERTICAL)
+	sprite.texture = load(LORE_SPRITE_VERTICAL)
 
 
 # === Mount System ===
