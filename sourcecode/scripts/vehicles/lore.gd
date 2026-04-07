@@ -183,7 +183,7 @@ func _handle_tile_transition(next_tile: Vector2i) -> void:
 	_update_sprite_direction()
 
 
-func _handle_curve(tile_data: Vector2i, tile_pos: Vector2i) -> void:
+func _handle_curve(tile_data: Vector2i, _tile_pos: Vector2i) -> void:
 	# Kurven-Mapping basierend auf Atlas-Koordinaten:
 	# (19,0) = Kurve von unten nach rechts (verbindet Süden mit Osten)
 	# (21,0) = Kurve von links nach unten (verbindet Westen mit Süden)
