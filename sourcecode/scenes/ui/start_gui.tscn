@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bskj0cyrtgd55"]
+
+[ext_resource type="Script" uid="uid://r8osq8f70512" path="res://scenes/ui/start_gui.gd" id="1_4pnpy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/start_menu.tscn" id="1_6wt33"]
+[ext_resource type="PackedScene" uid="uid://bpkpuwnv5gy7d" path="res://scenes/ui/version_widget.tscn" id="2_g8wtb"]
+
+
+[node name="StartGUI" type="CanvasLayer" unique_id=999579072]
+script = ExtResource("1_4pnpy")
+
+[node name="StartMenu" parent="." unique_id=788810476 instance=ExtResource("1_6wt33")]
+
+[node name="VersionWidget" parent="." unique_id=1379384079 instance=ExtResource("2_g8wtb")]
