@@ -35,6 +35,11 @@ func _ready() -> void:
 	_setup_limits_and_borders()
 
 
+func _process(_delta) -> void:
+	if Input.is_action_just_pressed("main_menu"):
+		get_tree().change_scene_to_file("res://scenes/ui/start_gui.tscn")
+
+
 func _setup_limits_and_borders() -> void:
 	var tile_map_used_rect = erdboden_ebene.get_used_rect()
 	var tile_size = erdboden_ebene.tile_set.tile_size
