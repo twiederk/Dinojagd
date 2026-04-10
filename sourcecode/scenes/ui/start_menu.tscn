@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://dft8xs3neo5gg"]
+
+[ext_resource type="Script" uid="uid://mx7j2f8pg3pb" path="res://scenes/ui/start_menu.gd" id="1_jwbto"]
+[ext_resource type="Texture2D" uid="uid://dyloooqdyjsc" path="res://assets/title_image.png" id="2_t8pa5"]
+
+[node name="StartMenu" type="Control" unique_id=1043704421]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jwbto")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=161630434]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="CenterContainer" unique_id=333725057]
+layout_mode = 2
+texture = ExtResource("2_t8pa5")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=357509823]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=645589649]
+layout_mode = 2
+text = "Neues Spiel starten"
+
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1541269402]
+layout_mode = 2
+text = "Beenden"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/StartButton" to="." method="_on_start_game_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

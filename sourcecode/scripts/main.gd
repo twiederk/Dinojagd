@@ -12,9 +12,6 @@ var Constants = preload("res://scripts/constants.gd")
 
 
 func _ready() -> void:
-	if not OS.has_feature("editor"):
-		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN	
-		
 	if player and hud:
 		player.item_collected.connect(_on_player_item_collected)
 		player.health_changed.connect(_on_player_health_changed)
@@ -36,6 +33,11 @@ func _ready() -> void:
 		hud.update_inventory(player.get_inventory())
 	
 	_setup_limits_and_borders()
+
+
+func _process(_delta) -> void:
+	if Input.is_action_just_pressed("main_menu"):
+		get_tree().change_scene_to_file("res://scenes/ui/start_gui.tscn")
 
 
 func _setup_limits_and_borders() -> void:
