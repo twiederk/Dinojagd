@@ -12,9 +12,6 @@ var Constants = preload("res://scripts/constants.gd")
 
 
 func _ready() -> void:
-	if not OS.has_feature("editor"):
-		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN	
-		
 	if player and hud:
 		player.item_collected.connect(_on_player_item_collected)
 		player.health_changed.connect(_on_player_health_changed)

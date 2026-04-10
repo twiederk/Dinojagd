@@ -20,6 +20,10 @@ config/windows_native_icon="res://icon.ico"
 
 Constants="res://scripts/constants.gd"
 
+[display]
+
+window/size/mode=4
+
 [input]
 
 collect_item={

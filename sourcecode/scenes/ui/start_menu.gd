@@ -2,7 +2,6 @@ class_name StartMenu
 extends Control
 
 @onready var start_button = $CenterContainer/VBoxContainer/StartButton
-@onready var load_button = $CenterContainer/VBoxContainer/LoadButton
 
 
 func _ready():
