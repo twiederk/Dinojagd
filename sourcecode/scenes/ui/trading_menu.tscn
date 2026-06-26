@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bkqjydwti61tl"]
 
-[ext_resource type="Script" uid="uid://d2b6hlrqn58j6" path="res://scenes/ui/trading_menu.gd" id="TradingMenuScript"]
+[ext_resource type="Script" uid="uid://cuvrnou5jmw73" path="res://scenes/ui/trading_menu.gd" id="trading_menu_script"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_atal0"]
 
@@ -11,7 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("TradingMenuScript")
+script = ExtResource("trading_menu_script")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1890617684]
 self_modulate = Color(0.4745098, 0.4509804, 0.40784314, 1)

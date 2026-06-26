@@ -9,7 +9,8 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var brontosaurus = $Brontosaurus
 @onready var map_borders: MapBorders = $MapBorders
 @onready var erdboden_ebene: TileMapLayer = $ErdbodenEbene
-@onready var trading_menu = $GUI/TradingMenu
+@onready var trading_menu: TradingMenu = $GUI/TradingMenu
+
 @onready var trader = $Trader
 
 

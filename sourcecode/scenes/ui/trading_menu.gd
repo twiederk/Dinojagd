@@ -33,7 +33,7 @@ func _on_kaufen_sniper_10_pressed() -> void:
 			print("✅ Sniper 10 gekauft!")
 			kaufen_sniper_10_button.disabled = true
 			kaufen_sniper_10_button.text = "✓ Besitzt"
-		else:
+		else: 
 			print("❌ Kauf fehlgeschlagen: Nicht genug Coins oder bereits besitzt")
 
 
