@@ -6,7 +6,7 @@ var Constants = preload("res://scripts/constants.gd")
 
 var speed: float = Constants.PLAYER_SPEED
 
-
+var coins: int = 0
 var inventory: Dictionary = {}
 
 

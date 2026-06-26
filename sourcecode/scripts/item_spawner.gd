@@ -2,8 +2,9 @@ extends Node2D
 
 var Constants = preload("res://scripts/constants.gd")
 
-# Item-Szene preload
+# Item-Szenen preload
 var item_scene = preload("res://scenes/items/Item.tscn")
+var coin_scene = preload("res://scenes/items/Coin.tscn")
 
 # Spawn Parameter
 var spawn_count_per_type: int = Constants.SPAWN_COUNT_PER_ITEM_TYPE
@@ -53,10 +54,16 @@ func _spawn_single_item(item_type: int) -> void:
 	var distance = randf_range(100, spawn_radius)
 	var spawn_pos = player.global_position + Vector2(cos(angle), sin(angle)) * distance
 	
+	# Richtige Szene basierend auf Item-Typ wählen
+	var scene_to_spawn = coin_scene if item_type == Constants.ItemType.COIN else item_scene
+	
 	# Item-Szene instanzieren
-	var item = item_scene.instantiate()
+	var item = scene_to_spawn.instantiate()
 	item.global_position = spawn_pos
-	item.item_type = item_type
+	
+	# item_type nur für nicht-Coins setzen (Coins haben fixed COIN type)
+	if item_type != Constants.ItemType.COIN:
+		item.item_type = item_type
 	
 	# Als Child hinzufügen
 	add_child(item)
