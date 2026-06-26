@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cnuumpbmumerw"]
+
+[ext_resource type="Script" uid="uid://c1sghbmedafj2" path="res://scenes/trader/trader.gd" id="1_f4poq"]
+[ext_resource type="SpriteFrames" uid="uid://6wkgrakh1u0x" path="res://assets/TraderSpriteFrames.tres" id="1_je6gk"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_je6gk"]
+radius = 4.0
+height = 14.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fj3m5"]
+radius = 30.504099
+
+[node name="Trader" type="StaticBody2D" unique_id=1256312236]
+scale = Vector2(2, 2)
+script = ExtResource("1_f4poq")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=83773051]
+sprite_frames = ExtResource("1_je6gk")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1931303997]
+shape = SubResource("CapsuleShape2D_je6gk")
+
+[node name="TradingArea" type="Area2D" parent="." unique_id=1344474876]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TradingArea" unique_id=385708907]
+shape = SubResource("CircleShape2D_fj3m5")
+
+[connection signal="body_entered" from="TradingArea" to="." method="_on_trading_area_body_entered"]
+[connection signal="body_exited" from="TradingArea" to="." method="_on_trading_area_body_exited"]

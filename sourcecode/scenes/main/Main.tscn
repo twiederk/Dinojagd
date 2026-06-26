@@ -3,6 +3,8 @@
 [ext_resource type="TileSet" uid="uid://bq5ffi6bigmxy" path="res://assets/IslandTileset.tres" id="2_sjxhf"]
 [ext_resource type="PackedScene" uid="uid://cxg2srcb55bc8" path="res://map_borders.tscn" id="8_ko0rf"]
 [ext_resource type="PackedScene" uid="uid://dj1oqdp0n6kvo" path="res://scenes/items/Coin.tscn" id="10_3km4f"]
+[ext_resource type="PackedScene" uid="uid://cnuumpbmumerw" path="res://scenes/trader/Trader.tscn" id="11_qkm1d"]
+[ext_resource type="PackedScene" uid="uid://bkqjydwti61tl" path="res://scenes/ui/trading_menu.tscn" id="12_p5fgu"]
 [ext_resource type="PackedScene" uid="uid://brontosaurus" path="res://scenes/vehicles/Brontosaurus.tscn" id="BrontosaurusScene"]
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/ui/HUD.tscn" id="HUDScene"]
 [ext_resource type="Script" uid="uid://bxoyy8xxw61fo" path="res://scripts/item_spawner.gd" id="ItemSpawnerScript"]
@@ -43,8 +45,6 @@ position = Vector2(-280, -125)
 [node name="Lore3" parent="." unique_id=489302124 instance=ExtResource("LoreScene")]
 position = Vector2(-224, 451)
 
-[node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]
-
 [node name="MapBorders" parent="." unique_id=1491260825 instance=ExtResource("8_ko0rf")]
 
 [node name="Coins" type="Node2D" parent="." unique_id=58003902]
@@ -66,3 +66,13 @@ position = Vector2(-713, 583)
 
 [node name="Coin6" parent="Coins" unique_id=1881515541 instance=ExtResource("10_3km4f")]
 position = Vector2(-744, 537)
+
+[node name="Trader" parent="." unique_id=1256312236 instance=ExtResource("11_qkm1d")]
+position = Vector2(-288, -392)
+
+[node name="GUI" type="CanvasLayer" parent="." unique_id=250575386]
+
+[node name="HUD" parent="GUI" unique_id=1143066013 instance=ExtResource("HUDScene")]
+
+[node name="TradingMenu" parent="GUI" unique_id=807287531 instance=ExtResource("12_p5fgu")]
+visible = false

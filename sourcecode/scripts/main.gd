@@ -9,6 +9,8 @@ var Constants = preload("res://scripts/constants.gd")
 @onready var brontosaurus = $Brontosaurus
 @onready var map_borders: MapBorders = $MapBorders
 @onready var erdboden_ebene: TileMapLayer = $ErdbodenEbene
+@onready var trading_menu = $GUI/TradingMenu
+@onready var trader = $Trader
 
 
 func _ready() -> void:
@@ -25,6 +27,9 @@ func _ready() -> void:
 		brontosaurus.player_nearby.connect(_on_brontosaurus_player_nearby)
 		brontosaurus.player_left.connect(_on_brontosaurus_player_left)
 		brontosaurus.brontosaurus_died.connect(_on_brontosaurus_died)
+		
+	trader.trading_started.connect(_on_trader_trading_started)
+	trader.trading_ended.connect(_on_trader_trading_ended)
 	
 	# Alle Loren finden und Signals verbinden
 	_connect_all_lores()
@@ -120,3 +125,11 @@ func _on_lore_player_nearby(lore_ref: CharacterBody2D) -> void:
 func _on_lore_player_left() -> void:
 	if player:
 		player.clear_nearby_lore()
+
+
+func _on_trader_trading_started() -> void:
+	trading_menu.show()
+
+
+func _on_trader_trading_ended() -> void:
+	trading_menu.hide()
