@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://lore"]
 
-[ext_resource type="Texture2D" uid="uid://lore_h" path="res://assets/Lore_horizontal.png" id="1_lore"]
-[ext_resource type="Script" uid="uid://lore_script" path="res://scripts/vehicles/lore.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://ook7xlqhxil2" path="res://assets/Lore_horizontal.png" id="1_lore"]
+[ext_resource type="Script" uid="uid://catoparu0o727" path="res://scripts/vehicles/lore.gd" id="2_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(64, 32)
