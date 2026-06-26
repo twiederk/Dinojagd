@@ -4,7 +4,7 @@ var Constants = preload("res://scripts/constants.gd")
 
 @onready var player = $Player
 @onready var item_spawner = $ItemSpawner
-@onready var hud = $HUD
+@onready var hud = $GUI/HUD
 @onready var t_rex = $TRex
 @onready var brontosaurus = $Brontosaurus
 @onready var map_borders: MapBorders = $MapBorders
