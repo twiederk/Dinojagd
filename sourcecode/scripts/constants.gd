@@ -80,6 +80,13 @@ const BULLET_SPEED = 500.0
 const BULLET_DAMAGE = 10
 const GUN_COOLDOWN = 0.3  # Sekunden zwischen Schüssen
 
+# Sniper Waffen Konstanten
+const SNIPER_10_DAMAGE = 15
+const SNIPER_10_COST = 5  # Münzen zum Kaufen
+
+const SNIPER_24_DAMAGE = 20
+const SNIPER_24_COST = 10  # Münzen zum Kaufen
+
 # Brontosaurus Konstanten (Phase 4)
 const BRONTOSAURUS_SPRITE_PATH = "res://assets/Brontosaurus.png"
 const BRONTOSAURUS_HP = 150

@@ -57,3 +57,7 @@ func set_direction(dir: Vector2) -> void:
 	direction = dir.normalized() if dir.length() > 0 else Vector2.RIGHT
 	# Optional: Sprite rotieren in Flugrichtung
 	rotation = direction.angle()
+
+func set_damage(new_damage: int) -> void:
+	"""Setzt das Damage für diese Bullet."""
+	damage = new_damage

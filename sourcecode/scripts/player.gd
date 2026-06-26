@@ -17,6 +17,8 @@ var is_alive: bool = true
 
 
 var has_gun: bool = false
+var has_sniper_10: bool = false  # Sniper 10: 15 Damage
+var has_sniper_24: bool = false  # Sniper 24: 20 Damage (beste Waffe)
 var gun_cooldown_timer: float = 0.0
 var last_direction: Vector2 = Vector2.RIGHT  # Standard-Richtung
 var BulletScene = preload("res://scenes/bullets/Bullet.tscn")
@@ -125,10 +127,23 @@ func _fire_gun() -> void:
 	bullet.global_position = global_position
 	bullet.set_direction(last_direction)
 	
+	# Setze Damage basierend auf beste verfügbare Waffe
+	var bullet_damage = Constants.BULLET_DAMAGE
+	var weapon_name = "Gun"
+	
+	if has_sniper_24:
+		bullet_damage = Constants.SNIPER_24_DAMAGE
+		weapon_name = "Sniper 24"
+	elif has_sniper_10:
+		bullet_damage = Constants.SNIPER_10_DAMAGE
+		weapon_name = "Sniper 10"
+	
+	bullet.set_damage(bullet_damage)
+	
 	get_tree().root.get_child(0).add_child(bullet)
 	
 	if Constants.DEBUG_MODE:
-		print("🔫 Player fired gun in direction: %s" % last_direction)
+		print("🔫 Player fired %s (%d damage) in direction: %s" % [weapon_name, bullet_damage, last_direction])
 
 
 func _can_mount() -> bool:
@@ -294,6 +309,52 @@ func has_item(item_type: int) -> bool:
 
 func get_item_count(item_type: int) -> int:
 	return inventory.get(item_type, 0)
+
+
+func buy_sniper_10() -> bool:
+	"""Kauft die Sniper 10-Waffe für 5 Coins. Gibt true zurück wenn erfolgreich."""
+	if has_sniper_10:
+		if Constants.DEBUG_MODE:
+			print("❌ Sniper 10 bereits gekauft!")
+		return false
+	
+	if inventory[Constants.ItemType.COIN] >= Constants.SNIPER_10_COST:
+		inventory[Constants.ItemType.COIN] -= Constants.SNIPER_10_COST
+		has_sniper_10 = true
+		emit_signal("item_collected", Constants.ItemType.COIN, inventory[Constants.ItemType.COIN])
+		
+		if Constants.DEBUG_MODE:
+			print("💰 Sniper 10 gekauft! 15 Damage, %d Coins verbleibend." % inventory[Constants.ItemType.COIN])
+		
+		return true
+	else:
+		if Constants.DEBUG_MODE:
+			print("❌ Nicht genug Coins für Sniper 10! Benötigt: %d, Vorhanden: %d" % [Constants.SNIPER_10_COST, inventory[Constants.ItemType.COIN]])
+		
+		return false
+
+
+func buy_sniper_24() -> bool:
+	"""Kauft die Sniper 24-Waffe für 10 Coins. Gibt true zurück wenn erfolgreich."""
+	if has_sniper_24:
+		if Constants.DEBUG_MODE:
+			print("❌ Sniper 24 bereits gekauft!")
+		return false
+	
+	if inventory[Constants.ItemType.COIN] >= Constants.SNIPER_24_COST:
+		inventory[Constants.ItemType.COIN] -= Constants.SNIPER_24_COST
+		has_sniper_24 = true
+		emit_signal("item_collected", Constants.ItemType.COIN, inventory[Constants.ItemType.COIN])
+		
+		if Constants.DEBUG_MODE:
+			print("💰 Sniper 24 gekauft! 20 Damage, %d Coins verbleibend." % inventory[Constants.ItemType.COIN])
+		
+		return true
+	else:
+		if Constants.DEBUG_MODE:
+			print("❌ Nicht genug Coins für Sniper 24! Benötigt: %d, Vorhanden: %d" % [Constants.SNIPER_24_COST, inventory[Constants.ItemType.COIN]])
+		
+		return false
 
 
 func set_camera_limits(north_limit: float, south_limit: float, west_limit: float, east_limit: float) -> void:
