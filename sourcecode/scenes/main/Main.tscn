@@ -2,6 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://bq5ffi6bigmxy" path="res://assets/IslandTileset.tres" id="2_sjxhf"]
 [ext_resource type="PackedScene" uid="uid://cxg2srcb55bc8" path="res://map_borders.tscn" id="8_ko0rf"]
+[ext_resource type="PackedScene" uid="uid://dj1oqdp0n6kvo" path="res://scenes/items/Coin.tscn" id="10_3km4f"]
 [ext_resource type="PackedScene" uid="uid://brontosaurus" path="res://scenes/vehicles/Brontosaurus.tscn" id="BrontosaurusScene"]
 [ext_resource type="PackedScene" uid="uid://hud" path="res://scenes/ui/HUD.tscn" id="HUDScene"]
 [ext_resource type="Script" uid="uid://bxoyy8xxw61fo" path="res://scripts/item_spawner.gd" id="ItemSpawnerScript"]
@@ -45,3 +46,23 @@ position = Vector2(-224, 451)
 [node name="HUD" parent="." unique_id=1143066013 instance=ExtResource("HUDScene")]
 
 [node name="MapBorders" parent="." unique_id=1491260825 instance=ExtResource("8_ko0rf")]
+
+[node name="Coins" type="Node2D" parent="." unique_id=58003902]
+
+[node name="Coin" parent="Coins" unique_id=1422507706 instance=ExtResource("10_3km4f")]
+position = Vector2(169, -357)
+
+[node name="Coin2" parent="Coins" unique_id=2017011030 instance=ExtResource("10_3km4f")]
+position = Vector2(-393, -582)
+
+[node name="Coin3" parent="Coins" unique_id=431328804 instance=ExtResource("10_3km4f")]
+position = Vector2(730, 310)
+
+[node name="Coin4" parent="Coins" unique_id=1743883152 instance=ExtResource("10_3km4f")]
+position = Vector2(-649, 552)
+
+[node name="Coin5" parent="Coins" unique_id=290559903 instance=ExtResource("10_3km4f")]
+position = Vector2(-713, 583)
+
+[node name="Coin6" parent="Coins" unique_id=1881515541 instance=ExtResource("10_3km4f")]
+position = Vector2(-744, 537)
