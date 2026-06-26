@@ -321,6 +321,7 @@ func buy_sniper_10() -> bool:
 	if inventory[Constants.ItemType.COIN] >= Constants.SNIPER_10_COST:
 		inventory[Constants.ItemType.COIN] -= Constants.SNIPER_10_COST
 		has_sniper_10 = true
+		has_gun = true  # Spieler erhält automatisch Gewehr
 		emit_signal("item_collected", Constants.ItemType.COIN, inventory[Constants.ItemType.COIN])
 		
 		if Constants.DEBUG_MODE:
@@ -344,6 +345,7 @@ func buy_sniper_24() -> bool:
 	if inventory[Constants.ItemType.COIN] >= Constants.SNIPER_24_COST:
 		inventory[Constants.ItemType.COIN] -= Constants.SNIPER_24_COST
 		has_sniper_24 = true
+		has_gun = true  # Spieler erhält automatisch Gewehr
 		emit_signal("item_collected", Constants.ItemType.COIN, inventory[Constants.ItemType.COIN])
 		
 		if Constants.DEBUG_MODE:
