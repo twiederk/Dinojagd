@@ -128,8 +128,8 @@ func _on_lore_player_left() -> void:
 
 
 func _on_trader_trading_started() -> void:
-	trading_menu.show()
+	trading_menu.show_trading_menu()
 
 
 func _on_trader_trading_ended() -> void:
-	trading_menu.hide()
+	trading_menu.hide_trading_menu()
