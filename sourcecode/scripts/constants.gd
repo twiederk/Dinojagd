@@ -5,7 +5,8 @@ enum ItemType {
 	GUN,      # Gewehr - Gewehr.png
 	GRASS,    # Gras - Gras.png
 	SADDLE,   # Sattel - Sattel.png
-	QUAD      # Quad - Quad.png
+	QUAD,     # Quad - Quad.png
+	COIN      # Münze - Coin.png
 }
 
 # Item Metadaten - Sprite-Pfade und Properties
@@ -28,6 +29,11 @@ const ITEM_DATA = {
 	ItemType.QUAD: {
 		"sprite_path": "res://assets/Quad.png",
 		"display_name": "Quad",
+		"collection_radius": 50.0
+	},
+	ItemType.COIN: {
+		"sprite_path": "res://assets/Coin.png",
+		"display_name": "Coin",
 		"collection_radius": 50.0
 	}
 }
@@ -73,6 +79,13 @@ const PLAYER_DAMAGE_COOLDOWN = 1.0
 const BULLET_SPEED = 500.0
 const BULLET_DAMAGE = 10
 const GUN_COOLDOWN = 0.3  # Sekunden zwischen Schüssen
+
+# Sniper Waffen Konstanten
+const SNIPER_10_DAMAGE = 15
+const SNIPER_10_COST = 5  # Münzen zum Kaufen
+
+const SNIPER_24_DAMAGE = 20
+const SNIPER_24_COST = 10  # Münzen zum Kaufen
 
 # Brontosaurus Konstanten (Phase 4)
 const BRONTOSAURUS_SPRITE_PATH = "res://assets/Brontosaurus.png"

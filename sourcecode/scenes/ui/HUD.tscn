@@ -3,11 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://bpkpuwnv5gy7d" path="res://scenes/ui/version_widget.tscn" id="2_atyv1"]
 [ext_resource type="Script" uid="uid://bqjgfbqmnxclx" path="res://scripts/hud.gd" id="HUDScript"]
 
-[node name="HUD" type="CanvasLayer" unique_id=622911333]
-layer = 10
+[node name="HUD" type="Control" unique_id=239872919]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("HUDScript")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=507057256]
+layout_mode = 0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = 410.0
@@ -26,3 +28,4 @@ text = "📦 Inventar:"
 layout_mode = 2
 
 [node name="VersionWidget" parent="." unique_id=681356886 instance=ExtResource("2_atyv1")]
+layout_mode = 1

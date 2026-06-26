@@ -1,4 +1,5 @@
-extends CanvasLayer
+class_name HUD
+extends Control
 
 var Constants = preload("res://scripts/constants.gd")
 

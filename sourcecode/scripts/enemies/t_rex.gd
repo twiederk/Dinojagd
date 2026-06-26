@@ -336,4 +336,30 @@ func _die() -> void:
 	if Constants.DEBUG_MODE:
 		print("💀 T-Rex ist gestorben!")
 	
+	# Spawne Coins als Belohnung (5 Coins)
+	_spawn_coin_drops(5)
+	
 	queue_free()
+
+
+func _spawn_coin_drops(count: int) -> void:
+	"""Spawnt mehrere Coins an der Position des T-Rex."""
+	var coin_scene = preload("res://scenes/items/Coin.tscn")
+	var item_spawner = get_tree().root.find_child("ItemSpawner", true, false)
+	
+	if not item_spawner:
+		if Constants.DEBUG_MODE:
+			print("⚠️ ItemSpawner nicht gefunden! Coins können nicht gespawnt werden.")
+		return
+	
+	for i in range(count):
+		# Kleine zufällige Offsets damit Coins nicht übereinander liegen
+		var offset = Vector2(randf_range(-30, 30), randf_range(-30, 30))
+		var coin = coin_scene.instantiate()
+		coin.global_position = global_position + offset
+		
+		# Als Child des ItemSpawners hinzufügen
+		item_spawner.add_child(coin)
+		
+		if Constants.DEBUG_MODE:
+			print("💰 Coin gespawnt bei %s" % coin.global_position)
